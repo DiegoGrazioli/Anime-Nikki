@@ -6,5 +6,7 @@ function validateLoginForm() {
         alert("Entrambi i campi username e password devono essere compilati.");
         return false;
     }
-    document.getElementById("loginForm").submit();
+    document.getElementById("loginbutton").onclick(() => 
+        document.getElementById("form").submit()
+    );
 }
