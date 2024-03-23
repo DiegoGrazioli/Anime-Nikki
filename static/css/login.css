@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+    background-color: black;
+    text-align: center;
+    font-family: Monserrat;
+}
+
+.container {
+    width: 300px;
+    height: 200px;
+    background-color: rgb(240, 248, 255, 0.7);
+    text-align: center;
+    padding: 70px 100px;
+    filter: blur();
+
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    border-radius: 30px;
+
+    justify-content: space-between;
+}
+
+.login {
+    width: 80px;
+    height: 30px;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 10px;
+    background-color: transparent;
+    border-color: black;
+}
+
+.login:hover {
+    background-color: black;
+    color: aliceblue;
+    border-color: rgb(106, 255, 255);
+    transition: background-color 0.3s;
+    animation: loghover 2s;
+}
+
+@keyframes loghover {
+    0% {
+        box-shadow: 10px rgb(106, 255, 255, 0);
+    }
+    50% {
+        box-shadow: 10px 10px rgb(106, 255, 255);
+        border-color: aliceblue;
+    }
+    100% {
+        border-color: rgb(106, 255, 255);
+    }
+}
