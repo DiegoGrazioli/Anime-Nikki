@@ -4,6 +4,7 @@ from flask_session import Session
 import sqlite3 as sq
 import bcrypt
 
+
 app = Flask(__name__)
 
 app.config["SESSION_PERMANENT"] = False
@@ -104,6 +105,7 @@ def register():
 @app.route('/home')
 def home():
     if 'logged_in' in session:
+
         return render_template('home.html', username=session['username'])
     else:
         return redirect('/login')
