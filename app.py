@@ -1,4 +1,5 @@
-#import requests
+from datetime import datetime
+import requests
 from flask import Flask, redirect, request, render_template, url_for, session
 from flask_session import Session
 import sqlite3 as sq
@@ -105,8 +106,53 @@ def register():
 @app.route('/home')
 def home():
     if 'logged_in' in session:
+        app.config["SESSION_PERMANENT"] = False
+        app.config["SESSION_TYPE"] = "filesystem"
+        Session(app)
 
-        return render_template('home.html', username=session['username'])
+        # Funzione per ottenere gli anime in corso dall'API di AniList
+        url = "https://graphql.anilist.co"
+
+        query = '''
+        query {
+            Page(page: 1, perPage: 100) {
+                media(status: RELEASING, type: ANIME) {
+                    id
+                    title {
+                        romaji
+                        english
+                    }
+                    description
+                    coverImage {
+                        large
+                    }
+                    nextAiringEpisode {
+                        airingAt
+                        episode
+                    }
+                }
+            }
+        }
+        '''
+
+        response = requests.post(url, json={'query': query})
+        data = response.json()
+
+        currently_airing_anime = []
+        for anime in data['data']['Page']['media']:
+            title = anime['title']['romaji']
+            description = anime['description']
+            image_url = anime['coverImage']['large']
+            airing_day = "Unknown"
+            episode = "Unknown"
+            if anime["nextAiringEpisode"]:
+                episode = anime["nextAiringEpisode"]["episode"]
+                airing_at = anime["nextAiringEpisode"]["airingAt"]
+                # Convertiamo il timestamp dell'episodio successivo in un giorno della settimana
+                airing_day = datetime.fromtimestamp(airing_at).strftime('%A')
+            currently_airing_anime.append({'title': title, 'description': description, 'image_url': image_url, 'airing_day': airing_day, 'episode': episode})
+
+        return render_template('home.html', username=session['username'], data=currently_airing_anime)
     else:
         return redirect('/login')
 
