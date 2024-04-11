@@ -1,4 +1,6 @@
 from datetime import datetime
+import json
+import xmltodict
 import requests
 from flask import Flask, redirect, request, render_template, url_for, session
 from flask_session import Session
@@ -103,8 +105,8 @@ def register():
     
     return render_template('register.html')
 
-@app.route('/home')
-def home():
+@app.route('/calendar', methods=['GET', 'POST'])
+def calendar():
     if 'logged_in' in session:
         app.config["SESSION_PERMANENT"] = False
         app.config["SESSION_TYPE"] = "filesystem"
@@ -152,7 +154,25 @@ def home():
                 airing_day = datetime.fromtimestamp(airing_at).strftime('%A')
             currently_airing_anime.append({'title': title, 'description': description, 'image_url': image_url, 'airing_day': airing_day, 'episode': episode})
 
-        return render_template('home.html', username=session['username'], data=currently_airing_anime)
+        return render_template('calendar.html', username=session['username'], data=currently_airing_anime)
+    else:
+        return redirect('/login')
+
+@app.route('/home')
+def home():
+    if 'logged_in' in session:
+        url = "https://www.animenewsnetwork.com/encyclopedia/reports.xml?id=148&nlist=140&nskip=0"
+        response = requests.get(url)
+        xml_data = response.text
+
+        # Convertire l'XML in un dizionario Python
+        data_dict = xmltodict.parse(xml_data)
+
+        # Convertire il dizionario Python in JSON
+        json_data = json.dumps(data_dict)
+
+        # Passare il JSON al template HTML
+        return render_template('home.html', username=session['username'], data=json_data)
     else:
         return redirect('/login')
 
