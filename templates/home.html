@@ -44,24 +44,23 @@
     </nav>
     <main class="bg-gray-900">
         <br/><br/><br/><br/><br/><br/><br/><br/><br/>
-        <h1 class="text-2xl padding-left-32px">Anime in corso:</h1>
+        <h1 class="text-2xl padding-left-32px">Anime recentemente aggiunti:</h1>
         <div class="body-container">
 
+            <!-- <h1>{{data}}</h1> -->
 
             <div class="anime-container">
                 {% for item in data.report.item %}
                 <div class="card">
-                    <img src="{{ item.anime['@href'] }}" alt="{{ item.anime['#text'] }}">
                     <div class="content">
                         <div class="title-date">
-                            <h3>{{ item.anime['#text'] }}</h3>
+                            <h3><a href="/id={{item.anime['@href']}}">{{ item.anime['#text'] }}</a></h3>
                             <h2>{{ item.date_added }}</h2>
                         </div>    
                         <!-- Aggiungi l'episodio qui, se presente -->
                         {% if 'episode' in item %}
                         <p>Episodio: {{ item.episode }}</p>
                         {% endif %}
-                        <p class="description">{{ item.anime['#text'] }}</p>
                     </div>
                 </div>
                 {% endfor %}

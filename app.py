@@ -168,7 +168,16 @@ def home():
         # Converto l'XML in un dizionario Python
         data_dict = xmltodict.parse(xml_data)
 
-        # Passo il JSON al template HTML
+        for item in data_dict['report']['item']:
+            # Aggiungo un campo 'image_url' a ciascun dizionario
+            item['anime']['@href'] = item['anime']['@href'][27:]
+            # item['anime']['@href'] = 'https://www.animenewsnetwork.com/encyclopedia/api.xml?title' + item['anime']['@href']
+            # single_response = requests.get(item['anime']['@href'])
+            # single_xml_data = single_response.text
+            # single_data_dict = xmltodict.parse(single_xml_data)
+            # if 'anime' in single_data_dict['ann']:
+            #     item['additional_data'] = single_data_dict['ann']['anime']
+
         return render_template('home.html', username=session['username'], data=data_dict)
     else:
         return redirect('/login')
