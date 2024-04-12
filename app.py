@@ -165,14 +165,11 @@ def home():
         response = requests.get(url)
         xml_data = response.text
 
-        # Convertire l'XML in un dizionario Python
+        # Converto l'XML in un dizionario Python
         data_dict = xmltodict.parse(xml_data)
 
-        # Convertire il dizionario Python in JSON
-        json_data = json.dumps(data_dict)
-
-        # Passare il JSON al template HTML
-        return render_template('home.html', username=session['username'], data=json_data)
+        # Passo il JSON al template HTML
+        return render_template('home.html', username=session['username'], data=data_dict)
     else:
         return redirect('/login')
 

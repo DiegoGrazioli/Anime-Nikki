@@ -46,11 +46,10 @@
         <br/><br/><br/><br/><br/><br/><br/><br/><br/>
         <h1 class="text-2xl padding-left-32px">Anime in corso:</h1>
         <div class="body-container">
-            
-            <h1>{{data}}</h1>
+
 
             <div class="anime-container">
-                {% for item in data.item %}
+                {% for item in data.report.item %}
                 <div class="card">
                     <img src="{{ item.anime['@href'] }}" alt="{{ item.anime['#text'] }}">
                     <div class="content">
