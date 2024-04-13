@@ -42,29 +42,42 @@
         </div>
         <div class="separator"></div>
     </nav>
-    <main class="bg-gray-900">
-        <br/><br/><br/><br/><br/><br/><br/><br/><br/>
-        <h1 class="text-2xl padding-left-32px">Anime recentemente aggiunti:</h1>
+    <div class="nav-shadow"></div>
+    <main>
+        <div class="home-spacing"></div>
+        <div class="intro-container">
+            <h1 class="intro-anime text-2xl padding-left-32px">Anime recentemente aggiunti:</h1>
+            <h1 class="intro-manga text-2xl padding-right-32px">Manga recentemente aggiunti:</h1>
+        </div>
+            
         <div class="body-container">
 
-            <!-- <h1>{{data}}</h1> -->
+            <!-- <h1>{{data2}}</h1> -->
 
             <div class="anime-container">
                 {% for item in data.report.item %}
                 <div class="card">
                     <div class="content">
                         <div class="title-date">
-                            <h3><a href="/id={{item.anime['@href']}}">{{ item.anime['#text'] }}</a></h3>
-                            <h2>{{ item.date_added }}</h2>
+                            <h3><a href="/content/{{item.anime['@href']}}">{{ item.anime['#text'] }}</a></h3>
+                            <h2 class="date">{{ item.date_added }}</h2>
                         </div>    
-                        <!-- Aggiungi l'episodio qui, se presente -->
-                        {% if 'episode' in item %}
-                        <p>Episodio: {{ item.episode }}</p>
-                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
             </div>
+            <div class="manga-container">
+                {% for item in data2.report.item %}
+                    <div class="card2">
+                        <div class="content">
+                            <div class="title-date">
+                                <h3 class="name"><a href="/content/{{item.manga['@href']}}">{{ item.manga['#text'] }}</a></h3>
+                                <h2 class="date">{{ item.date_added }}</h2>
+                            </div>    
+                        </div>
+                    </div>
+                {% endfor %}
+        </div>
         </div>
     </main>
     <script>
@@ -87,7 +100,29 @@
             descriptions[i].innerHTML = descriptions[i].innerHTML.replace(/(<|&lt;)br\s*\/*(>|&gt;)/g,' ');
         }
 
+        document.addEventListener("DOMContentLoaded", function() {
+            const cards = document.querySelectorAll(".card");
+            let delay = 0;
 
+            cards.forEach(function(card) {
+                setTimeout(function() {
+                    card.classList.add("animated");
+                }, delay);
+                delay += 100; // Puoi regolare la velocità dell'animazione modificando questo valore
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const cards = document.querySelectorAll(".card2");
+            let delay = 0;
+
+            cards.forEach(function(card) {
+                setTimeout(function() {
+                    card.classList.add("animated");
+                }, delay);
+                delay += 100; // Puoi regolare la velocità dell'animazione modificando questo valore
+            });
+        });
     </script>
 </body>
 </html>

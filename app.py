@@ -171,6 +171,7 @@ def home():
         for item in data_dict['report']['item']:
             # Aggiungo un campo 'image_url' a ciascun dizionario
             item['anime']['@href'] = item['anime']['@href'][27:]
+            item['date_added'] = item['date_added'][0:10]
             # item['anime']['@href'] = 'https://www.animenewsnetwork.com/encyclopedia/api.xml?title' + item['anime']['@href']
             # single_response = requests.get(item['anime']['@href'])
             # single_xml_data = single_response.text
@@ -178,7 +179,21 @@ def home():
             # if 'anime' in single_data_dict['ann']:
             #     item['additional_data'] = single_data_dict['ann']['anime']
 
-        return render_template('home.html', username=session['username'], data=data_dict)
+        url = "https://www.animenewsnetwork.com/encyclopedia/reports.xml?id=149&nlist=140&nskip=0"
+        response = requests.get(url)
+        xml_data = response.text
+
+        # Converto l'XML in un dizionario Python
+        data_dict2 = xmltodict.parse(xml_data)
+
+        for item in data_dict2['report']['item']:
+            # Aggiungo un campo 'image_url' a ciascun dizionario
+            item['manga']['@href'] = item['manga']['@href'][27:]
+            item['date_added'] = item['date_added'][0:10]
+        
+        # https://www.animenewsnetwork.com/encyclopedia/reports.xml?id=149&nlist=140&nskip=0
+
+        return render_template('home.html', username=session['username'], data=data_dict, data2=data_dict2)
     else:
         return redirect('/login')
 
@@ -187,6 +202,66 @@ def logout():
     session.pop('logged_in', None)
     session.pop('username', None)
     return redirect('/login')
+
+
+@app.get('/content/<int:id>')
+def get_item_by_id(id):
+    
+    url = "https://cdn.animenewsnetwork.com/encyclopedia/api.xml?title=" + str(id)
+
+    response = requests.get(url)
+    xml_data = response.text
+    data = xmltodict.parse(xml_data)
+
+    # 0 se è un manga, 1 se è un anime
+    aorm = -1
+
+    if 'anime' in data['ann']:
+        aorm = 1
+    elif 'manga' in data['ann']:
+        aorm = 0
+    else:
+        variables = {
+            'searchParam': id,
+        }
+
+        query = '''
+            query ($id: Int) { # Define which variables will be used in the query (id)
+            Media (id: $id, type: ANIME) { # Insert our variables into the query arguments (id) (type: ANIME is hard-coded in the query)
+                id
+                title {
+                romaji
+                english
+                native
+                }
+            }
+            }
+        ''';
+    
+        url = 'https://graphql.anilist.co'
+        response = requests.post(url, json={'query': query, 'variables': variables})
+        data = response.json()
+
+    return render_template('item_details.html', aorm=aorm, data=data, username=session.get('username', None))
+
+@app.get('/content/search/<string:name>')
+def get_item_by_name(name):
+    url = "https://cdn.animenewsnetwork.com/encyclopedia/api.xml?title=~" + str(name)
+
+    response = requests.get(url)
+    xml_data = response.text
+    data = xmltodict.parse(xml_data)
+
+    # false se è un manga, true se è un anime
+    aorm = -1
+
+    if 'anime' in data['ann']:
+        aorm = True
+    else:
+        aorm = False
+
+    return render_template('item_details.html', aorm=aorm, data=data, username=session.get('username', None))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

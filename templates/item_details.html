@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- {% if aorm %}
+        <title>{{ data.ann.anime['@name'] }}</title>
+    {% elif aorm==false %}
+    {% else %}
+        <title>{{ data.title.romaji }}</title>
+    {% endif %} -->
+    <title>titolo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <h1>Ciao</h1>
+    <!-- <div>{{data}}</div> -->
+
+    {% if aorm==1 %}
+        <h1>{{ data.ann.anime['@name'] }}</h1>
+        <p><strong>Original Title:</strong> {{ data.ann.anime['original_title'] }}</p>
+        <p><strong>Episodes:</strong> {{ data.ann.anime['episodes'] }}</p>
+        <p><strong>Type:</strong> {{ data.ann.anime['type'] }}</p>
+        <p><strong>Genres:</strong> {{ data.ann.anime['genres'] }}</p>
+        <p><strong>Themes:</strong> {{ data.ann.anime['themes'] }}</p>
+        <img src="{{ data.ann.anime.info[0]['@src'] }}" alt="Niente immagine">
+        <p>{{ data.ann.anime['plot_summary'] }}</p>
+    {% elif aorm == 0 %}
+        <h1>{{ data.ann.manga['@name'] }}</h1>
+        <p><strong>Original Title:</strong> {{ data.ann.manga['original_title'] }}</p>
+        <p><strong>Episodes:</strong> {{ data.ann.manga['episodes'] }}</p>
+        <p><strong>Type:</strong> {{ data.ann.manga['type'] }}</p>
+        <p><strong>Genres:</strong> {{ data.ann.manga['genres'] }}</p>
+        <p><strong>Themes:</strong> {{ data.ann.manga['themes'] }}</p>
+        <img src="{{ data.ann.manga.info[0]['@src'] }}" alt="Niente immagine">
+        <p>{{ data.ann.manga['plot_summary'] }}</p>
+    {% else %}
+    <h1>{{ data.title.romaji }}</h1>
+    {% endif %}
+
+</body>
+</html>
