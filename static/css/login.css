@@ -64,3 +64,11 @@ svg {
         opacity: 1;
     }
 }
+
+#password {
+    padding-left: 10px;
+}
+
+#username {
+    padding-left: 10px;
+}

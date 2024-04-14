@@ -318,6 +318,16 @@ def get_item_by_name(name):
 
     return get_item_by_id(data['data']['Media']['id'])
 
+@app.get('/content/search/')
+def search():
+    
+    return render_template('search.html', username=session.get('username', None))
+
+@app.route('/get_name', methods=['POST'])
+def get_name():
+        if request.method == 'POST':
+            name = request.form['title']
+            return get_item_by_name(name)
 
 if __name__ == '__main__':
     app.run(debug=True)
