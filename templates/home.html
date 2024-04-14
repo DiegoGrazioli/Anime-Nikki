@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime|Nikki:Home</title>
+    <title>A|N:Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="static/css/home.css">
+    <link rel="stylesheet" href="../static/css/home.css">
 </head>
 <body>
     <nav class="bg-indigo-600">
@@ -59,7 +59,7 @@
                 <div class="card">
                     <div class="content">
                         <div class="title-date">
-                            <h3><a href="/content/{{item.anime['@href']}}">{{ item.anime['#text'] }}</a></h3>
+                            <h3><a href="/content/search/{{item.anime['#text']}}">{{ item.anime['#text'] }}</a></h3>
                             <h2 class="date">{{ item.date_added }}</h2>
                         </div>    
                     </div>
@@ -71,7 +71,7 @@
                     <div class="card2">
                         <div class="content">
                             <div class="title-date">
-                                <h3 class="name"><a href="/content/{{item.manga['@href']}}">{{ item.manga['#text'] }}</a></h3>
+                                <h3 class="name"><a href="/content/search/{{item.manga['#text']}}">{{ item.manga['#text'] }}</a></h3>
                                 <h2 class="date">{{ item.date_added }}</h2>
                             </div>    
                         </div>

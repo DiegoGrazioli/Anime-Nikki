@@ -207,60 +207,116 @@ def logout():
 @app.get('/content/<int:id>')
 def get_item_by_id(id):
     
-    url = "https://cdn.animenewsnetwork.com/encyclopedia/api.xml?title=" + str(id)
+    variables = {
+        'id': id,  # Passa il nome dell'anime come stringa
+    }
 
-    response = requests.get(url)
-    xml_data = response.text
-    data = xmltodict.parse(xml_data)
-
-    # 0 se è un manga, 1 se è un anime
-    aorm = -1
-
-    if 'anime' in data['ann']:
-        aorm = 1
-    elif 'manga' in data['ann']:
-        aorm = 0
-    else:
-        variables = {
-            'searchParam': id,
-        }
-
-        query = '''
-            query ($id: Int) { # Define which variables will be used in the query (id)
-            Media (id: $id, type: ANIME) { # Insert our variables into the query arguments (id) (type: ANIME is hard-coded in the query)
+    query = '''
+        query ($id: Int) {
+            Media (id: $id, type: ANIME) {
                 id
                 title {
-                romaji
-                english
-                native
+                    romaji
+                    english
+                    native
+                }
+                type
+                format
+                status
+                episodes
+                duration
+                averageScore
+                popularity
+                description
+                coverImage {
+                    large
+                    medium
+                }
+                bannerImage
+                startDate {
+                    year
+                    month
+                    day
+                }
+                endDate {
+                    year
+                    month
+                    day
+                }
+                genres
+                synonyms
+                season
+                source
+                studios {
+                    nodes {
+                        id
+                        name
+                    }
+                }
+                trailer {
+                    id
+                    site
+                    thumbnail
+                }
+                staff {
+                    edges {
+                        role
+                        node {
+                            id
+                            name {
+                                full
+                                native
+                            }
+                        }
+                    }
+                }
+                characters {
+                    edges {
+                        role
+                        node {
+                            id
+                            name {
+                                full
+                                native
+                            }
+                        }
+                    }
                 }
             }
-            }
-        ''';
-    
-        url = 'https://graphql.anilist.co'
-        response = requests.post(url, json={'query': query, 'variables': variables})
-        data = response.json()
+        }
+    '''
 
-    return render_template('item_details.html', aorm=aorm, data=data, username=session.get('username', None))
+    url = 'https://graphql.anilist.co'
+    response = requests.post(url, json={'query': query, 'variables': variables})
+    data = response.json()
+
+    return render_template('item_details.html', data=data, username=session.get('username', None))
 
 @app.get('/content/search/<string:name>')
 def get_item_by_name(name):
-    url = "https://cdn.animenewsnetwork.com/encyclopedia/api.xml?title=~" + str(name)
 
-    response = requests.get(url)
-    xml_data = response.text
-    data = xmltodict.parse(xml_data)
+    variables = {
+        'title': name,  # Passa il nome dell'anime come stringa
+    }
 
-    # false se è un manga, true se è un anime
-    aorm = -1
+    query = '''
+        query ($title: String) {
+            Media (search: $title, type: ANIME) {
+                id
+                title {
+                    romaji
+                    english
+                    native
+                }
+            }
+        }
+    ''';
 
-    if 'anime' in data['ann']:
-        aorm = True
-    else:
-        aorm = False
+    url = 'https://graphql.anilist.co'
+    response = requests.post(url, json={'query': query, 'variables': variables})
+    data = response.json()
 
-    return render_template('item_details.html', aorm=aorm, data=data, username=session.get('username', None))
+    return get_item_by_id(data['data']['Media']['id'])
 
 
 if __name__ == '__main__':
