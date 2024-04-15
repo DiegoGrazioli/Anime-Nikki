@@ -289,8 +289,10 @@ def get_item_by_id(id):
     url = 'https://graphql.anilist.co'
     response = requests.post(url, json={'query': query, 'variables': variables})
     data = response.json()
-
-    return render_template('item_details.html', data=data, username=session.get('username', None))
+    if data is None or data.get('data', None) is None or data['data'].get('Media', None) is None:  
+        return render_template('search.html', username=session.get('username', None), message='Anime non trovato')
+    else:
+        return render_template('item_details.html', data=data, username=session.get('username', None))
 
 @app.get('/content/search/<string:name>')
 def get_item_by_name(name):

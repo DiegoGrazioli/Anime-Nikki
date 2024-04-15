@@ -337,6 +337,25 @@
             display: flex;
             justify-content: space-between;
         }
+        #title {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+        form {
+            margin: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        label {
+            font-size: 1.5rem;
+            animation: fadeIn-translate2 1s;
+        }
+        input {
+            margin-top: 8px;
+            padding-left: 16px;
+            padding-right: 16px;
+        }
     </style>
 </head>
 <body>
@@ -378,8 +397,9 @@
     <main>
         <div class="home-spacing"></div>
         <form action="{{url_for('get_name')}}" method="post" id="form" onload="clearParams()">
-            <label for="title" class="block text-sm font-medium leading-6 text-white-900">Inserisci nome dell'anime</label>
-            <div class="mt-2">
+            <a class="font-semibold text-sm text-red-600">{{message}}</a>
+            <label for="title" class="block font-medium leading-6 text-white-900">Inserisci nome dell'anime</label>
+            <div class="mt-2 display-flex flex-direction-column gap-16px">
                 <input id="title" name="title" type="text" autocomplete="text" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                 <button type="submit" id="searchbutton" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Cerca</button>
             </div>
