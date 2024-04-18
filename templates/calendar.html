@@ -50,18 +50,33 @@
             <!-- <h1>{{data}}</h1> -->
 
             <div class="anime-fullcontainer">
-                {% for dato in data %}
+                {% set sorted_data = data | sort(attribute='airing_day') %}
+                {% for dato in sorted_data %}
                     <div class="card">
                         <img src="{{ dato.image_url }}" alt="{{ dato.title }}">
                         <div class="content">
                             <div class="title-date">
                                 <h3><a href="/content/search/{{dato.title}}">{{ dato.title }}</a></h3>
-                                <h2>{{ dato.airing_day }}, {{dato.episode}}</h2>
+                                {% if dato.airing_day == 'Monday' %}
+                                    <h2>Lunedì, episodio: {{dato.episode}}</h2>
+                                {% elif dato.airing_day == 'Tuesday' %}
+                                    <h2>Martedì, episodio: {{dato.episode}}</h2>
+                                {% elif dato.airing_day == 'Wednesday' %}
+                                    <h2>Mercoledì, {{dato.episode}}</h2>
+                                {% elif dato.airing_day == 'Thursday' %}
+                                    <h2>Giovedì, episodio: {{dato.episode}}</h2>
+                                {% elif dato.airing_day == 'Friday' %}
+                                    <h2>Venerdì, episodio: {{dato.episode}}</h2>
+                                {% elif dato.airing_day == 'Saturday' %}
+                                    <h2>Sabato, episodio: {{dato.episode}}</h2>
+                                {% elif dato.airing_day == 'Sunday' %}
+                                    <h2>Domenica, episodio: {{dato.episode}}</h2>
+                                {% endif %}
                             </div>    
                             <p class="description">{{ dato.description }}</p>
                         </div>
                     </div>
-                {% endfor %}
+                {% endfor %}         
             </div>
         </div>
     </main>

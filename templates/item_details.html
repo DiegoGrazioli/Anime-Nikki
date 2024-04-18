@@ -372,6 +372,57 @@
             align-content: center;
             flex-direction: column;
         }
+        .character-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-evenly;
+        }
+        .ch-card {
+            border: 1px solid #ccc;
+            background: linear-gradient(45deg, transparent, #181D3C, transparent);
+            border-radius: 32px;
+            border-left: 0px;
+            border-right: 0px;
+            padding: 16px;
+            margin: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-direction: column;
+        }
+        .character {
+            border: 1px solid #ccc;
+            background: linear-gradient(45deg, #1A191A, transparent, #1A191A);
+            border-radius: 32px;
+            border-left: 0px;
+            border-right: 0px;
+            padding: 16px;
+            margin: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-direction: column;
+        }
+        .character img {
+            border-radius: 30px;
+        }
+        .main {
+            background: linear-gradient(45deg, #1a88d1, transparent, #1a88d1);
+        }
+        .ant {
+            background: linear-gradient(45deg, #d11a1a, transparent, #d11a1a);
+        }
+        .supp {
+            background: linear-gradient(45deg, #1ad1a1, transparent, #1ad1a1);
+        }
+
     </style>
 </head>
 <body>
@@ -472,6 +523,40 @@
                             <h3>Studio:</h3>
                             <p>{{ data.data.Media.studios.nodes[0].name }}</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="characters">
+                <div class="ch-card">
+                    <h3>Characters</h3>
+                    <div class="character-list">
+                        {% for character in data.data.Media.characters.edges %}
+                            {% if character.role == "MAIN" %}
+                                <div class="main character">
+                                    <img src="{{ character.node.image.large }}" alt="Character Image">
+                                    <h4>{{ character.node.name.full }}</h4>
+                                    <p>{{ character.role }}</p>
+                                </div>
+                            {% elif character.role == "ANTAGONIST" %}
+                                <div class="character ant">
+                                    <img src="{{ character.node.image.large }}" alt="Character Image">
+                                    <h4>{{ character.node.name.full }}</h4>
+                                    <p>{{ character.role }}</p>
+                                </div>
+                            {% elif character.role == "SUPPORTING" %}
+                                <div class="character supp">
+                                    <img src="{{ character.node.image.large }}" alt="Character Image">
+                                    <h4>{{ character.node.name.full }}</h4>
+                                    <p>{{ character.role }}</p>
+                                </div>
+                            {% else %}
+                                <div class="character">
+                                    <img src="{{ character.node.image.large }}" alt="Character Image">
+                                    <h4>{{ character.node.name.full }}</h4>
+                                    <p>{{ character.role }}</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
             </div>

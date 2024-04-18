@@ -153,7 +153,7 @@ def calendar():
                 # Convertiamo il timestamp dell'episodio successivo in un giorno della settimana
                 airing_day = datetime.fromtimestamp(airing_at).strftime('%A')
             currently_airing_anime.append({'title': title, 'description': description, 'image_url': image_url, 'airing_day': airing_day, 'episode': episode})
-
+            
         return render_template('calendar.html', username=session['username'], data=currently_airing_anime)
     else:
         return redirect('/login')
@@ -278,6 +278,10 @@ def get_item_by_id(id):
                             name {
                                 full
                                 native
+                            }
+                            image {
+                                large
+                                medium
                             }
                         }
                     }
