@@ -155,6 +155,30 @@
             }
         }
 
+        .sidebar {
+            height: 30px;
+            margin-top: 5px;
+
+            .sidebar-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+                visibility: hidden;
+                opacity: 0;
+                transition: visibility 0.5s, opacity 0.5s ease-in-out;
+            }
+        }
+
+        .sidebar:hover {
+            .sidebar-content {
+                gap: 10px;
+                visibility: visible;
+                opacity: 1;
+                transition: visibility 0s, opacity 0.5s ease-in-out;
+            }
+        }
+
         .card {
             border: 1px solid #ccc;
             background: linear-gradient(45deg, transparent, #181D3C, transparent);
@@ -377,6 +401,17 @@
                     <li><div class="minorHeaderDivider"></div></li>
                     <li><a href="{{url_for('search')}}" class="text-white hover:text-gray-200">Cerca</a></li>
                     <li><div class="minorHeaderDivider"></div></li>
+                    <li>
+                        <div class="sidebar">
+                            <a href="" class="text-white hover:text-gray-200">Top</a>
+                            <ul class="sidebar-content">
+                                <br><br>
+                                <li><a href="{{url_for('topchar')}}">Characters</a></li>
+                                <div class="horHeaderDivider"></div>
+                                <li><a href="">Anime</a></li>
+                            </ul>
+                        </div>
+                    </li>
                     <li>
                         <div class="user-sidebar">
                             <div class="username-circle">{{ username[0] }}</div>

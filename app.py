@@ -203,6 +203,49 @@ def logout():
     session.pop('username', None)
     return redirect('/login')
 
+@app.get('/content/characters/<int:id>')
+def get_char_by_id(id):
+        
+    variables = {
+        'id': id,  # Passa il nome dell'anime come stringa
+    }
+
+    query = '''
+        query ($id: Int) {
+            Media (id: $id, type: ANIME) {
+                id
+                title {
+                    romaji
+                    english
+                    native
+                }
+                characters {
+                    edges {
+                        role
+                        node {
+                            id
+                            name {
+                                full
+                                native
+                            }
+                            image {
+                                large
+                                medium
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    '''
+
+    url = 'https://graphql.anilist.co'
+    response = requests.post(url, json={'query': query, 'variables': variables})
+    data = response.json()
+    if data is None or data.get('data', None) is None or data['data'].get('Media', None) is None:  
+        return render_template('search.html', username=session.get('username', None), message='Anime non trovato')
+    else:
+        return render_template('char_details.html', data=data, username=session.get('username', None))
 
 @app.get('/content/<int:id>')
 def get_item_by_id(id):
@@ -334,6 +377,42 @@ def get_name():
         if request.method == 'POST':
             name = request.form['title']
             return get_item_by_name(name)
+
+@app.route('/topchar')
+def topchar():
+    limit=10
+    url = "https://graphql.anilist.co"
+
+    # Query GraphQL per ottenere i personaggi più popolari
+    query = """
+    query ($page: Int, $perPage: Int) {
+        Page(page: $page, perPage: $perPage) {
+            characters(sort: FAVOURITES_DESC) {
+                id
+                name {
+                    full
+                }
+                image {
+                    large
+                }
+                favourites
+                description
+            }
+        }
+    }
+    """
+
+    # Parametri della query
+    variables = {
+        "page": 1,
+        "perPage": limit
+    }
+
+    # Effettua la richiesta POST all'API di AniList
+    response = requests.post(url, json={'query': query, 'variables': variables})
+
+    data = response.json()
+    return render_template('topchar.html', data=data, username=session.get('username', None))
 
 if __name__ == '__main__':
     app.run(debug=True)
