@@ -312,3 +312,9 @@ nav {
 .card2.animated {
     animation: fadeIn-translate2 1s;
 }
+
+.title {
+    width: 100%;
+    text-align: center;
+    animation: fadeIn-translate2 1s;
+}

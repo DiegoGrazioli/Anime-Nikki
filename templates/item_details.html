@@ -448,6 +448,9 @@
             background: linear-gradient(45deg, #1ad1a1, transparent, #1ad1a1);
         }
 
+        .anime-image img{
+            border-radius: 16px;
+        }
     </style>
 </head>
 <body>
@@ -474,9 +477,9 @@
                             <a href="" class="text-white hover:text-gray-200">Top</a>
                             <ul class="sidebar-content">
                                 <br><br>
-                                <li><a href="{{url_for('topchar')}}">Characters</a></li>
+                                <li><a href="{{url_for('topchar', limit=10)}}">Characters</a></li>
                                 <div class="horHeaderDivider"></div>
-                                <li><a href="">Anime</a></li>
+                                <li><a href="{{url_for('topanime', limit=10)}}">Anime</a></li>
                             </ul>
                         </div>
                     </li>

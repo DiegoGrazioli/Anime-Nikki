@@ -31,9 +31,9 @@
                             <a href="" class="text-white hover:text-gray-200">Top</a>
                             <ul class="sidebar-content">
                                 <br><br>
-                                <li><a href="{{url_for('topchar')}}">Characters</a></li>
+                                <li><a href="{{url_for('topchar', limit=10)}}">Characters</a></li>
                                 <div class="horHeaderDivider"></div>
-                                <li><a href="">Anime</a></li>
+                                <li><a href="{{url_for('topanime', limit=10)}}">Anime</a></li>
                             </ul>
                         </div>
                     </li>
@@ -55,8 +55,12 @@
     </nav>
     <div class="nav-shadow"></div>
     <main class="bg-gray-900">
-        <br/><br/><br/><br/><br/><br/><br/><br/><br/>
-        <h1 class="text-2xl padding-left-32px">Calendario anime:</h1>
+        <div class="home-spacing"></div>
+        <h1 class=" title text-2xl py-8">
+            <div class="separator"></div>
+            Calendario anime
+            <div class="separator"></div>
+        </h1>
         <div class="body-container">
             
             <!-- <h1>{{data}}</h1> -->

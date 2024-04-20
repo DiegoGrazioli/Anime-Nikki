@@ -31,9 +31,9 @@
                             <a href="" class="text-white hover:text-gray-200">Top</a>
                             <ul class="sidebar-content">
                                 <br><br>
-                                <li><a href="{{url_for('topchar')}}">Characters</a></li>
+                                <li><a href="{{url_for('topchar', limit=10)}}">Characters</a></li>
                                 <div class="horHeaderDivider"></div>
-                                <li><a href="">Anime</a></li>
+                                <li><a href="{{url_for('topanime', limit=10)}}">Anime</a></li>
                             </ul>
                         </div>
                     </li>
@@ -44,7 +44,7 @@
                                 <br><br>
                                 <li><a href="">Opzioni</a></li>
                                 <div class="horHeaderDivider"></div>
-                                <li><a href="{{url_for('login')}}">Logout</a></li>
+                                <li><a href="{{url_for('login', limit=10)}}">Logout</a></li>
                             </ul>
                         </div>
                     </li>

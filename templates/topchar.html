@@ -100,6 +100,16 @@
             }
         }
 
+        @keyframes rotate {
+            from {
+                background: linear-gradient(45deg, transparent, #181D3C, transparent);
+            }
+
+            to {
+                background: linear-gradient(135deg, transparent, #181D3C, transparent);
+            }
+        }
+
         nav {
             background: linear-gradient(90deg, #111827, transparent, transparent, transparent, transparent, #111827) no-repeat;
             width: 100%;
@@ -210,13 +220,29 @@
             align-items: center;
         }
 
+        .card3 {
+            border: 1px solid #ccc;
+            background: linear-gradient(45deg, transparent, #181D3C, transparent);
+            border-radius: 32px;
+            border-left: 0px;
+            border-right: 0px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card3:hover {
+            animation: rotate 1s;
+        }
+
         .card:hover, .card:hover {
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
         .card img, .card2 img {
             max-width: 100%;
-            border-radius: 4px;
+            border-radius: 16px;
             margin-bottom: 12px;
             padding-right: 20px;
         }
@@ -235,6 +261,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .title {
+            width: 100%;
+            text-align: center;
+            animation: fadeIn-translate2 1s;
         }
 
         .body-container {
@@ -347,9 +379,9 @@
                             <a href="" class="text-white hover:text-gray-200">Top</a>
                             <ul class="sidebar-content">
                                 <br><br>
-                                <li><a href="{{url_for('topchar')}}">Characters</a></li>
+                                <li><a href="{{url_for('topchar', limit=10)}}">Characters</a></li>
                                 <div class="horHeaderDivider"></div>
-                                <li><a href="">Anime</a></li>
+                                <li><a href="{{url_for('topanime', limit=10)}}">Anime</a></li>
                             </ul>
                         </div>
                     </li>
@@ -373,9 +405,12 @@
     <main>
         <div class="home-spacing"></div>
 
-        {{data}}
     <div class="anime-fullcontainer">
-
+        <h1 class=" title text-2xl py-8">
+            <div class="separator"></div>
+            Top characters
+            <div class="separator"></div>
+        </h1>
         {% for dato in data.data.Page.characters %}
             <div class="card">
                 <img src="{{ dato.image.large }}" alt="">
@@ -383,11 +418,22 @@
                     <div class="title-date">
                         <h3><a href="">{{ dato.name.full }}</a></h3>
                     </div>    
-                    <p class="description">{{ dato.description }}</p>
+                    {% for i in dato.description_lines %}
+                        <p class="description">{{ i }}</p>
+                    {% endfor %}
                 </div>
             </div>
         {% endfor %}
     </div>
+    <div>
+        <div class="card3">
+            <div class="flex flex-row justify-around">
+                <a href="{{url_for('topchar', limit=20)}}">Top 20?</a>
+                <a href="{{url_for('topchar', limit=30)}}">Top 30?</a>
+            </div>
+        </div>
+    </div>
+    </main>
     <script>
         // Genera un numero casuale tra 0 e 3
         var randomIndex = Math.floor(Math.random() * 4);
