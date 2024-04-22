@@ -248,135 +248,217 @@ def get_char_by_id(id):
         return render_template('char_details.html', data=data, username=session.get('username', None))
 
 @app.get('/content/<int:id>')
-def get_item_by_id(id):
+def get_item_by_id(id, is_anime):
     
     variables = {
         'id': id,  # Passa il nome dell'anime come stringa
     }
-
-    query = '''
-        query ($id: Int) {
-            Media (id: $id, type: ANIME) {
-                id
-                title {
-                    romaji
-                    english
-                    native
-                }
-                type
-                format
-                status
-                episodes
-                duration
-                averageScore
-                popularity
-                description
-                coverImage {
-                    large
-                    medium
-                }
-                bannerImage
-                startDate {
-                    year
-                    month
-                    day
-                }
-                endDate {
-                    year
-                    month
-                    day
-                }
-                genres
-                synonyms
-                season
-                source
-                studios {
-                    nodes {
-                        id
-                        name
-                    }
-                }
-                trailer {
+    if is_anime:
+        query = '''
+            query ($id: Int) {
+                Media (id: $id, type: ANIME) {
                     id
-                    site
-                    thumbnail
-                }
-                staff {
-                    edges {
-                        role
-                        node {
+                    title {
+                        romaji
+                        english
+                        native
+                    }
+                    type
+                    format
+                    status
+                    episodes
+                    duration
+                    averageScore
+                    popularity
+                    description
+                    coverImage {
+                        large
+                        medium
+                    }
+                    bannerImage
+                    startDate {
+                        year
+                        month
+                        day
+                    }
+                    endDate {
+                        year
+                        month
+                        day
+                    }
+                    genres
+                    synonyms
+                    season
+                    source
+                    studios {
+                        nodes {
                             id
-                            name {
-                                full
-                                native
+                            name
+                        }
+                    }
+                    trailer {
+                        id
+                        site
+                        thumbnail
+                    }
+                    staff {
+                        edges {
+                            role
+                            node {
+                                id
+                                name {
+                                    full
+                                    native
+                                }
                             }
                         }
                     }
-                }
-                characters {
-                    edges {
-                        role
-                        node {
-                            id
-                            name {
-                                full
-                                native
-                            }
-                            image {
-                                large
-                                medium
+                    characters {
+                        edges {
+                            role
+                            node {
+                                id
+                                name {
+                                    full
+                                    native
+                                }
+                                image {
+                                    large
+                                    medium
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-    '''
+        '''
+    else:
+        query = '''
+            query ($id: Int) {
+                Media (id: $id, type: MANGA) {
+                    id
+                    title {
+                        romaji
+                        english
+                        native
+                    }
+                    type
+                    format
+                    status
+                    chapters
+                    volumes
+                    averageScore
+                    popularity
+                    description
+                    coverImage {
+                        large
+                        medium
+                    }
+                    bannerImage
+                    startDate {
+                        year
+                        month
+                        day
+                    }
+                    endDate {
+                        year
+                        month
+                        day
+                    }
+                    genres
+                    synonyms
+                    season
+                    source
+                    characters {
+                        edges {
+                            role
+                            node {
+                                id
+                                name {
+                                    full
+                                    native
+                                }
+                                image {
+                                    large
+                                    medium
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        '''
 
     url = 'https://graphql.anilist.co'
     response = requests.post(url, json={'query': query, 'variables': variables})
     data = response.json()
     if data is None or data.get('data', None) is None or data['data'].get('Media', None) is None:  
-        return render_template('search.html', username=session.get('username', None), message='Anime non trovato')
+        if is_anime:
+            return render_template('search.html', username=session.get('username', None), anime_message='Anime non trovato')
+        else:
+            return render_template('search.html', username=session.get('username', None), manga_message='Manga non trovato')
     else:
-        return render_template('item_details.html', data=data, username=session.get('username', None))
+        if is_anime:
+            return render_template('anime_item_details.html', data=data, username=session.get('username', None))
+        else:
+            return render_template('manga_item_details.html', data=data, username=session.get('username', None))
 
 @app.get('/content/search/<string:name>')
-def get_item_by_name(name):
+def get_item_by_name(name, is_anime):
 
     variables = {
         'title': name,  # Passa il nome dell'anime come stringa
     }
 
-    query = '''
-        query ($title: String) {
-            Media (search: $title, type: ANIME) {
-                id
-                title {
-                    romaji
-                    english
-                    native
+    if is_anime:
+        query = '''
+            query ($title: String) {
+                Media (search: $title, type: ANIME) {
+                    id
+                    title {
+                        romaji
+                        english
+                        native
+                    }
                 }
             }
-        }
-    ''';
+        ''';
+    else:
+        query = '''
+            query ($title: String) {
+                Media (search: $title, type: MANGA) {
+                    id
+                    title {
+                        romaji
+                        english
+                        native
+                    }
+                }
+            }
+        ''';
 
     url = 'https://graphql.anilist.co'
     response = requests.post(url, json={'query': query, 'variables': variables})
     data = response.json()
 
-    return get_item_by_id(data['data']['Media']['id'])
+    return get_item_by_id(data['data']['Media']['id'], is_anime)
 
 @app.get('/content/search/')
 def search():
     
     return render_template('search.html', username=session.get('username', None))
 
-@app.route('/get_name', methods=['POST'])
-def get_name():
+@app.route('/anime', methods=['POST'])
+def get_anime_name():
         if request.method == 'POST':
             name = request.form['title']
-            return get_item_by_name(name)
+            return get_item_by_name(name, True) # True per indicare che è un anime
+
+@app.route('/manga', methods=['POST'])
+def get_manga_name():
+        if request.method == 'POST':
+            name = request.form['title']
+            return get_item_by_name(name, False) # False per indicare che è un manga
 
 @app.route('/topchar')
 def topchar():
@@ -478,6 +560,57 @@ def topanime():
     data = response.json()
 
     return render_template('topanime.html', data=data, username=session.get('username', None))
+
+@app.route('/topmanga')
+def topmanga():
+    limit = request.args.get('limit', default=10, type=int)
+    url = "https://graphql.anilist.co"
+
+    # Query GraphQL per ottenere i personaggi più popolari
+    query = """
+        query ($page: Int, $perPage: Int) {
+        Page(page: $page, perPage: $perPage) {
+            media(sort: SCORE_DESC, type: MANGA) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                large
+            }
+            startDate {
+                year
+                month
+                day
+            }
+            description
+            genres
+            averageScore
+            popularity
+            type
+            format
+            status
+            chapters
+            volumes
+            }
+        }
+        }
+    """
+
+    # Parametri della query
+    variables = {
+        "page": 1,
+        "perPage": limit
+    }
+
+    # Effettua la richiesta POST all'API di AniList
+    response = requests.post(url, json={'query': query, 'variables': variables})
+
+    data = response.json()
+
+    return render_template('topmanga.html', data=data, username=session.get('username', None))
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -318,3 +318,7 @@ nav {
     text-align: center;
     animation: fadeIn-translate2 1s;
 }
+
+.manga {
+    background: linear-gradient(transparent, #3c182e, transparent);
+}
