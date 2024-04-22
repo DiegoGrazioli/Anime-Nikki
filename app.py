@@ -248,7 +248,9 @@ def get_char_by_id(id):
         return render_template('char_details.html', data=data, username=session.get('username', None))
 
 @app.get('/content/<int:id>')
-def get_item_by_id(id, is_anime):
+def get_item_by_id(id, is_anime="None"):
+    if is_anime == "None":
+        is_anime = request.args.get('is_anime', 'false') == 'true'
     
     variables = {
         'id': id,  # Passa il nome dell'anime come stringa

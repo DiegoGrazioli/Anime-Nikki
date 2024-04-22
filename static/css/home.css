@@ -322,3 +322,8 @@ nav {
 .manga {
     background: linear-gradient(transparent, #3c182e, transparent);
 }
+
+.favourites {
+    width: 30px;
+    height: 30px;
+}
