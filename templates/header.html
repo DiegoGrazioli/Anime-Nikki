@@ -1,56 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <nav class="bg-indigo-600">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between py-4">
-                <div class="logo">  
-                    <div id="svg-container"></div>
-                    <div class="headerDivider"></div>
-                    <div class="logo-name">
-                        <h1 class="ali anime text-white-600">ANIME</h1>
-                        <h1 class="ali nikki">nikki</h1>
+<nav class="bg-indigo-600">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between py-4">
+            <div class="logo">  
+                <div id="svg-container"></div>
+                <div class="headerDivider"></div>
+                <div class="logo-name">
+                    <h1 class="ali anime text-white-600">ANIME</h1>
+                    <h1 class="ali nikki">nikki</h1>
+                </div>
+            </div>  
+            <ul class="flex-container space-x-4">
+                <li><a href="{{url_for('home')}}" class="text-white hover:text-gray-200">Home</a></li>
+                <li><div class="minorHeaderDivider"></div></li>
+                <li><a href="{{url_for('calendar')}}" class="text-white hover:text-gray-200">Calendario</a></li>
+                <li><div class="minorHeaderDivider"></div></li>
+                <li><a href="{{url_for('search')}}" class="text-white hover:text-gray-200">Cerca</a></li>
+                <li><div class="minorHeaderDivider"></div></li>
+                <li>
+                    <div class="sidebar">
+                        <a href="" class="text-white hover:text-gray-200">Top</a>
+                        <ul class="sidebar-content">
+                            <br><br>
+                            <li><a href="{{url_for('topchar', limit=10)}}">Characters</a></li>
+                            <div class="horHeaderDivider"></div>
+                            <li><a href="{{url_for('topanime', limit=10)}}">Anime</a></li>
+                        </ul>
                     </div>
-                </div>  
-                <ul class="flex-container space-x-4">
-                    <li><a href="{{url_for('home')}}" class="text-white hover:text-gray-200">Home</a></li>
-                    <li><div class="minorHeaderDivider"></div></li>
-                    <li><a href="{{url_for('calendar')}}" class="text-white hover:text-gray-200">Calendario</a></li>
-                    <li><div class="minorHeaderDivider"></div></li>
-                    <li><a href="{{url_for('search')}}" class="text-white hover:text-gray-200">Cerca</a></li>
-                    <li><div class="minorHeaderDivider"></div></li>
-                    <li>
-                        <div class="sidebar">
-                            <a href="" class="text-white hover:text-gray-200">Top</a>
-                            <ul class="sidebar-content">
-                                <br><br>
-                                <li><a href="{{url_for('topchar')}}">Characters</a></li>
-                                <div class="horHeaderDivider"></div>
-                                <li><a href="">Anime</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="user-sidebar">
-                            <div class="username-circle">{{ username[0] }}</div>
-                            <ul class="sidebar-content">
-                                <br><br>
-                                <li><a href="">Opzioni</a></li>
-                                <div class="horHeaderDivider"></div>
-                                <li><a href="{{url_for('login')}}">Logout</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+                </li>
+                <li>
+                    <div class="user-sidebar">
+                        <div class="username-circle">{{ username[0] }}</div>
+                        <ul class="sidebar-content">
+                            <br><br>
+                            <li><a href="">Opzioni</a></li>
+                            <div class="horHeaderDivider"></div>
+                            <li><a href="{{url_for('login')}}">Logout</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
         </div>
-        <div class="separator"></div>
-    </nav>
-    <div class="nav-shadow"></div>
-</body>
-</html>
+    </div>
+    <div class="separator"></div>
+</nav>
+<div class="nav-shadow"></div>
