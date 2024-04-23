@@ -406,7 +406,7 @@ def get_item_by_id(id, is_anime="None"):
             return render_template('manga_item_details.html', data=data, username=session.get('username', None))
 
 @app.get('/content/search/<string:name>')
-def get_item_by_name(name, is_anime):
+def get_item_by_name(name, is_anime=True):
 
     variables = {
         'title': name,  # Passa il nome dell'anime come stringa
