@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 import xmltodict
 import requests
-from flask import Flask, redirect, request, render_template, url_for, session
+from flask import Flask, jsonify, redirect, request, render_template, url_for, session
 from flask_session import Session
 import sqlite3 as sq
 import bcrypt
@@ -93,7 +93,7 @@ def register():
             return render_template('register.html', message='Username già in uso. Scegli un altro username.')
         else:
             # Inserisci il nuovo utente nel database
-            cur.execute('INSERT INTO users (username, password) VALUES (?, ?)', (usern, hashed_password))
+            cur.execute('INSERT INTO users (username, password, createdate) VALUES (?, ?, ?)', (usern, hashed_password, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
             conn.commit()
             conn.close()
             
@@ -613,6 +613,38 @@ def topmanga():
     data = response.json()
 
     return render_template('topmanga.html', data=data, username=session.get('username', None))
+
+@app.route('/toggle_favourite', methods=['POST'])
+def toggle_favourite():
+    data = request.json
+    anime_id = data.get('animeId')
+    user_id = data.get('userId')
+
+    try:
+        conn = sq.connect('anime.sqlite3')
+        cursor = conn.cursor()
+
+        # Verifica se l'anime è già nei preferiti dell'utente
+        cursor.execute("SELECT 1 FROM user_anime WHERE user_id = ? AND anime_id = ?", (user_id, anime_id))
+        row = cursor.fetchone()
+
+        if row:
+            # Rimuovi l'anime dai preferiti dell'utente
+            cursor.execute("DELETE FROM user_anime WHERE user_id = ? AND anime_id = ?", (user_id, anime_id))
+            conn.commit()
+
+            conn.close()
+            return jsonify({'success': True, 'message': 'Anime rimosso dai preferiti'})
+        else:
+            # Aggiungi l'anime ai preferiti dell'utente
+            cursor.execute("INSERT INTO user_anime (user_id, anime_id) VALUES (?, ?)", (user_id, anime_id))
+            conn.commit()
+
+            conn.close()
+            return jsonify({'success': True, 'message': 'Anime aggiunto ai preferiti'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
