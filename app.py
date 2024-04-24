@@ -645,6 +645,37 @@ def toggle_favourite():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
+@app.route('/toggle_favourite_m', methods=['POST'])
+def toggle_favourite_m():
+    data = request.json
+    manga_id = data.get('mangaId')
+    user_id = data.get('userId')
+
+    try:
+        conn = sq.connect('anime.sqlite3')
+        cursor = conn.cursor()
+
+        # Verifica se il manga è già nei preferiti dell'utente
+        cursor.execute("SELECT 1 FROM user_manga WHERE user_id = ? AND manga_id = ?", (user_id, manga_id))
+        row = cursor.fetchone()
+
+        if row:
+            # Rimuovi il manga dai preferiti dell'utente
+            cursor.execute("DELETE FROM user_manga WHERE user_id = ? AND manga_id = ?", (user_id, manga_id))
+            conn.commit()
+
+            conn.close()
+            return jsonify({'success': True, 'message': 'Manga rimosso dai preferiti'})
+        else:
+            # Aggiungi il manga ai preferiti dell'utente
+            cursor.execute("INSERT INTO user_manga (user_id, manga_id) VALUES (?, ?)", (user_id, manga_id))
+            conn.commit()
+
+            conn.close()
+            return jsonify({'success': True, 'message': 'Manga aggiunto ai preferiti'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
