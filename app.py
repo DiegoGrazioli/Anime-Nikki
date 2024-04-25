@@ -676,6 +676,93 @@ def toggle_favourite_m():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
+@app.route('/account')
+def account():
+    if 'logged_in' in session:
+        conn = sq.connect('anime.sqlite3')
+        cur = conn.cursor()
+        cur.execute('SELECT createdate FROM users WHERE username = ?', (session['username'],))
+        data_string = cur.fetchone()[0]
+        cur.execute('SELECT anime_id FROM user_anime WHERE user_id = ?', (session['username'],))
+        anime = cur.fetchall()
+        cur.execute('SELECT manga_id FROM user_manga WHERE user_id = ?', (session['username'],))
+        manga = cur.fetchall()
+        conn.close()
+
+        # controlla se la tupla anime ha elementi vuoti
+        if anime:
+            anime = [anime[i][0] for i in range(len(anime))]
+            anime.pop(-1)
+        else:
+            anime = []
+
+        # controlla se la tupla manga ha elementi vuoti
+        if manga:
+            manga = [manga[i][0] for i in range(len(manga))]
+        else:
+            manga = []
+
+        url = "https://graphql.anilist.co"
+        anime_data = []
+        manga_data = []
+
+        # fetch di ogni anime/manga dall'api di anilist
+        for id in manga:
+            query = """
+                query ($id: Int) {
+                    Media (id: $id) {
+                        id
+                        title {
+                            romaji
+                            english
+                            native
+                        }
+                        coverImage {
+                            large
+                        }
+                    }
+                }
+                """
+
+            variables = {
+                "id": id
+            }
+
+            response = requests.post(url, json={"query": query, "variables": variables})
+            manga_data.append(response.json())
+
+        for id in anime:
+            query = """
+                query ($id: Int) {
+                    Media (id: $id) {
+                        id
+                        title {
+                            romaji
+                            english
+                            native
+                        }
+                        coverImage {
+                            large
+                        }
+                    }
+                }
+                """
+
+            variables = {
+                "id": id
+            }
+
+            response = requests.post(url, json={"query": query, "variables": variables})
+
+            anime_data.append(response.json())
+
+        data = datetime.strptime(data_string, "%Y-%m-%d %H:%M:%S")
+
+        # Formatta la data nel formato desiderato
+        data = data.strftime("%d-%m-%Y")
+        return render_template('account.html', username=session.get('username', None), createdate=data, anime=anime_data, manga=manga_data)
+    else:
+        return redirect('/login')
 
 if __name__ == '__main__':
     app.run(debug=True)
