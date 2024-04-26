@@ -692,7 +692,6 @@ def account():
         # controlla se la tupla anime ha elementi vuoti
         if anime:
             anime = [anime[i][0] for i in range(len(anime))]
-            anime.pop(-1)
         else:
             anime = []
 
