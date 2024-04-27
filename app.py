@@ -763,5 +763,42 @@ def account():
     else:
         return redirect('/login')
 
+@app.route('/quote')
+def quote():
+    # controlla se nella tabella user_quotes del database è presente la data odierna, se sì non effettua la richiesta all'api e restituisce quei dati, altrimenti genera una nuova richiesta
+    conn = sq.connect('anime.sqlite3')
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM quotes WHERE date = ?', (datetime.now().strftime('%Y-%m-%d'),))
+    data = cur.fetchall()
+    conn.close()
+
+    result = check_today_date(data)
+
+    if result is not None:
+        result_json = {
+            'anime': result[3],
+            'character': result[4],
+            'quote': result[5]
+        }
+        return render_template('quote.html', username=session.get('username', None), data=result_json)
+    else:
+        url = "https://api.jikan.moe/v3/quotes/random"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            result = {
+                'anime': data[0]['anime'],
+                'character': data[0]['character'],
+                'quote': data[0]['quote']
+            }
+        return render_template('quote.html', username=session.get('username', None), data=result) 
+
+def check_today_date(data):
+    today = datetime.today().date()
+    for row in data:
+        if row['date'].date() == today:
+            return row
+    return None
+
 if __name__ == '__main__':
     app.run(debug=True)
