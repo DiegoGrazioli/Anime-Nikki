@@ -768,37 +768,97 @@ def quote():
     # controlla se nella tabella user_quotes del database è presente la data odierna, se sì non effettua la richiesta all'api e restituisce quei dati, altrimenti genera una nuova richiesta
     conn = sq.connect('anime.sqlite3')
     cur = conn.cursor()
-    cur.execute('SELECT * FROM quotes WHERE date = ?', (datetime.now().strftime('%Y-%m-%d'),))
-    data = cur.fetchall()
+
+    today = datetime.today().date()
+
+    cur.execute('SELECT * FROM quotes WHERE date = ?', (today,))
+    row = cur.fetchone()
     conn.close()
 
-    result = check_today_date(data)
+    if row:
+        result = row
+    else:
+        result = None
 
     if result is not None:
         result_json = {
-            'anime': result[3],
-            'character': result[4],
-            'quote': result[5]
+            'id': result[0],
+            'anime': result[2],
+            'character': result[3],
+            'quote': result[4],
+            'date': result[5]
         }
         return render_template('quote.html', username=session.get('username', None), data=result_json)
     else:
-        url = "https://api.jikan.moe/v3/quotes/random"
+        url = "https://animechan.xyz/api/random"
         response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            result = {
-                'anime': data[0]['anime'],
-                'character': data[0]['character'],
-                'quote': data[0]['quote']
-            }
+        data = response.json()
+        result = {
+            'anime': data['anime'],
+            'character': data['character'],
+            'quote': '"' + data['quote'] + '"',
+            'date': datetime.today().date()
+        }
+        conn = sq.connect('anime.sqlite3')
+        cur = conn.cursor()
+        cur.execute('INSERT INTO quotes (date, anime, character, quote) VALUES (?, ?, ?, ?)', (datetime.now().strftime('%Y-%m-%d'), data['anime'], data['character'], data['quote']))
+        conn.commit()
+        conn.close()
+
+        conn = sq.connect('anime.sqlite3')
+        cur = conn.cursor()
+        cur.execute('SELECT quote_id FROM quotes WHERE date = ?', (today,))
+        row = cur.fetchone()
+        conn.close()
+        
+        result['id'] = row[0]
         return render_template('quote.html', username=session.get('username', None), data=result) 
 
-def check_today_date(data):
-    today = datetime.today().date()
-    for row in data:
-        if row['date'].date() == today:
-            return row
-    return None
+@app.route('/toggle_favourite_q', methods=['POST'])
+def toggle_favourite_q():
+    data = request.json
+    quote_id = data.get('quoteId')
+    user_id = data.get('userId')
+
+    try:
+        conn = sq.connect('anime.sqlite3')
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT 1 FROM user_quotes WHERE user_id = ? AND quote_id = ?", (user_id, quote_id))
+        row = cursor.fetchone()
+
+        if row:
+            cursor.execute("DELETE FROM user_quotes WHERE user_id = ? AND quote_id = ?", (user_id, quote_id))
+            conn.commit()
+            conn.close()
+            return jsonify({'success': True, 'message': 'Quote rimossa dai preferiti'})
+        else:
+            cursor.execute("INSERT INTO user_quotes (user_id, quote_id) VALUES (?, ?)", (user_id, quote_id))
+            conn.commit()
+
+            conn.close()
+            return jsonify({'success': True, 'message': 'Quote aggiunta ai preferiti'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/favquotes')
+def favquotes():
+    conn = sq.connect('anime.sqlite3')
+    cur = conn.cursor()
+    cur.execute('''
+                SELECT * FROM quotes 
+                    JOIN user_quotes ON quotes.quote_id = user_quotes.quote_id
+                WHERE 
+                    user_quotes.user_id = ?
+                ''', (session.get('username'),))
+    data = cur.fetchall()
+    conn.close()
+
+    data = [list(row) for row in data]
+    
+    formatted_data = [{'id': row[0], 'anime': row[2], 'character': row[3], 'quote': row[4], 'date': row[5]} for row in data]
+
+    return render_template('favquotes.html', data=formatted_data, username=session.get('username', None))
 
 if __name__ == '__main__':
     app.run(debug=True)

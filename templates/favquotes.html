@@ -475,36 +475,36 @@
         
         <!-- <div>{{data}}</div> -->
         <div class="anime-fullcontainer">
-            <div id="sium">
+            <div class="separator"></div>
+            <h1 class="flex justify-center py-4 title text-2xl">Quotes salvate</h1>
+            <div class="separator"></div>
 
-            </div>
-            <div class="separator"></div>
-            <h1 class="flex justify-center py-4 title"><a class="text-3xl" id="anime-source" href="{{url_for('get_item_by_name', name=data.anime, is_anime=true)}}">{{ data.anime }}</a></h1>
-            <div class="separator"></div>
-            <div class="card">
-                <div class="basic-info">
-                    <div class="title-date">
-                        <div class="anime-title">
-                            <h1 id="character-source">{{data.character}}</h1>
+            {% for item in data %}
+                <div class="card">
+                    <div class="basic-info">
+                        <div class="title-date">
+                            <div class="anime-title">
+                                <h1 id="character-source">{{item.character}}</h1>
+                            </div>
+                        </div>
+                        <div class="anime-description">
+                            <p id="date"> {{item.date}}</p>
+                        </div>
+                        <div class="favourites">
+                            <button class="icon" data-clicked="true" class="favourite-btn" onclick="switchIcon(this)" id="{{item.id}}" data-user="{{username}}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                                    <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/>
+                                </svg>
+                            </button>                             
                         </div>
                     </div>
-                    <div class="anime-description">
-                        <p id="date"> {{data.date}}</p>
-                    </div>
-                    <div class="favourites">
-                        <button class="favourite-btn" onclick="switchIcon(this)" id="{{data.id}}" data-user="{{username}}">
-                        <svg class="icon" data-clicked="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                        </svg>
-                        </button>
+                    <div class="genres">
+                        <div class="anime-info info-genres">
+                            <h3 id="anime-quote">"{{ item.quote }}"</h3>
+                        </div>
                     </div>
                 </div>
-                <div class="genres">
-                    <div class="anime-info info-genres">
-                        <h3 id="anime-quote">"{{ data.quote }}"</h3>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </main>
     <script>
@@ -559,7 +559,7 @@
                 var quoteId = this.id;
                 var userId = this.getAttribute('data-user');
 
-                fetch('/toggle_favourite_q', {
+                fetch('/toggle_favourite', {
                     method: 'POST',
                     body: JSON.stringify({ quoteId: quoteId, userId: userId }),
                     headers: {
