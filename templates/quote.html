@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- <link rel="stylesheet" href="../static/css/home.css"> -->
+    <link rel="stylesheet" href="../static/css/home.css">
     <title>A|N: Daily quote</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
@@ -183,7 +183,8 @@
 
         .card {
             border: 1px solid #ccc;
-            background: linear-gradient(45deg, transparent, #181D3C, transparent);
+            background: linear-gradient(45deg, transparent, #33724b, transparent);
+            color: white;
             border-radius: 32px;
             border-left: 0px;
             border-right: 0px;
@@ -466,10 +467,14 @@
             height: 30px;
             right: 0px;
         }
+
+        .quote {
+
+        }
     </style>
 </head>
 <body>
-    {% include 'header.html' %}
+    {% include 'headerq.html' %}
     <main>
         <div class="home-spacing"></div>
         

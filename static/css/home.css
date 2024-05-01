@@ -321,6 +321,11 @@ nav {
 
 .manga {
     background: linear-gradient(transparent, #3c182e, transparent);
+    color: white;
+}
+
+.quote-nav {
+    background: linear-gradient(90deg, transparent, #4cdb79, transparent);
 }
 
 .favourites {
