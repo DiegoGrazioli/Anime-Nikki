@@ -862,10 +862,17 @@ def favquotes():
 
     return render_template('favquotes.html', data=formatted_data, username=session.get('username', None))
 
-@app.route('/newgame', methods=['POST'])
+@app.route('/newgame')
 def newgame():
 
     return render_template('newgame.html', username=session.get('username', None))
 
+@app.route('/game', methods=['POST'])
+def game(id):
+    if request.method == 'POST':
+        
+
+        return render_template('game.html', username=session.get('username', None))
+        # return redirect('/leaderboard')
 if __name__ == '__main__':
     app.run(debug=True)
