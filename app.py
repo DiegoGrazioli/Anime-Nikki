@@ -117,20 +117,22 @@ def calendar():
 
         query = '''
         query {
-            Page(page: 1, perPage: 100) {
-                media(status: RELEASING, type: ANIME) {
-                    id
-                    title {
-                        romaji
-                        english
-                    }
-                    description
-                    coverImage {
-                        large
-                    }
-                    nextAiringEpisode {
-                        airingAt
-                        episode
+            Page {
+                airingSchedules(notYetAired: true) {
+                    media {
+                        id
+                        title {
+                            romaji
+                            english
+                        }
+                        description
+                        coverImage {
+                            large
+                        }
+                        nextAiringEpisode {
+                            airingAt
+                            episode
+                        }
                     }
                 }
             }
@@ -141,19 +143,19 @@ def calendar():
         data = response.json()
 
         currently_airing_anime = []
-        for anime in data['data']['Page']['media']:
-            title = anime['title']['romaji']
+        for schedule in data['data']['Page']['airingSchedules']:
+            anime = schedule['media']
+            title = anime['title']['english'] or anime['title']['romaji']
             description = anime['description']
             image_url = anime['coverImage']['large']
             airing_day = "Unknown"
             episode = "Unknown"
-            if anime["nextAiringEpisode"]:
+            if anime.get("nextAiringEpisode"):
                 episode = anime["nextAiringEpisode"]["episode"]
                 airing_at = anime["nextAiringEpisode"]["airingAt"]
                 # Convertiamo il timestamp dell'episodio successivo in un giorno della settimana
                 airing_day = datetime.fromtimestamp(airing_at).strftime('%A')
             currently_airing_anime.append({'title': title, 'description': description, 'image_url': image_url, 'airing_day': airing_day, 'episode': episode})
-            
         return render_template('calendar.html', username=session['username'], data=currently_airing_anime)
     else:
         return redirect('/login')

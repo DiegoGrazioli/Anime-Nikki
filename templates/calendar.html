@@ -27,7 +27,7 @@
                         <img src="{{ dato.image_url }}" alt="{{ dato.title }}">
                         <div class="content">
                             <div class="title-date">
-                                <h3><a href="{{url_for('get_item_by_name', name=dato.title, is_anime='true')}}">{{ dato.title }}</a></h3>
+                                <h3><a href="{{url_for('get_item_by_name', name=dato.title)}}">{{ dato.title }}</a></h3>
                                 {% if dato.airing_day == 'Monday' %}
                                     <h2>Lunedì, episodio: {{dato.episode}}</h2>
                                 {% elif dato.airing_day == 'Tuesday' %}
