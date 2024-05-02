@@ -1,12 +1,11 @@
 from datetime import datetime
-import json
 import xmltodict
 import requests
 from flask import Flask, jsonify, redirect, request, render_template, url_for, session
 from flask_session import Session
 import sqlite3 as sq
 import bcrypt
-
+import random
 
 app = Flask(__name__)
 
@@ -867,12 +866,94 @@ def newgame():
 
     return render_template('newgame.html', username=session.get('username', None))
 
-@app.route('/game', methods=['POST'])
-def game(id):
+def generateQuestions(mode):
+    # 1: indovina copertina dall'anime
+    # 2: indovina l'anime dalla copertina
+    # 3: indovina l'anime dal personaggio
+    # 4: indovina il personaggio dall'anime
+    # tutti hanno 4 opzioni, solo una è corretta. Tutto è preso dall'api di AniList in modo randomico, prediligendo i più popolari
+    query = ''
+    if mode == 1 or mode == 2:
+        query = '''
+            query ($page: Int, $perPage: Int) {
+                Page(page: $page, perPage: $perPage) {
+                    media(sort: POPULARITY_DESC, type: ANIME) {
+                        id
+                        title {
+                            romaji
+                            english
+                        }
+                        coverImage {
+                            large
+                        }
+                    }
+                }
+            }
+        '''
+    elif mode == 3 or mode == 4:
+        query = '''
+            query ($page: Int, $perPage: Int) {
+                Page(page: $page, perPage: $perPage) {
+                    media(sort: POPULARITY_DESC, type: ANIME) {
+                        id
+                        title {
+                            romaji
+                            english
+                        }
+                        characters {
+                            edges {
+                                role
+                                node {
+                                    id
+                                    name {
+                                        full
+                                        native
+                                    }
+                                    image {
+                                        large
+                                        medium
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        '''
+    url = 'https://graphql.anilist.co'
+    variables = {
+        "page": 1,
+        "perPage": 10
+    }
+
+    response = requests.post(url, json={'query': query, 'variables': variables})
+    data = response.json()
+
+    # seleziona quattro elementi randomici dalla lista. Se mode è 1 o 2, seleziona solo l'id, il titolo e l'immagine, altrimenti seleziona l'id, il titolo e un personaggio
+    if mode == 1 or mode == 2:
+        data = data['data']['Page']['media']
+        data = [data[i] for i in range(4)]
+        data = [{'id': data[i]['id'], 'title': data[i]['title']['english'] or data[i]['title']['romaji'], 'image': data[i]['coverImage']['large']} for i in range(4)]
+        solution = data[0]
+    else:
+        data = data['data']['Page']['media']
+        data = [data[i] for i in range(4)]
+        data = [{'id': data[i]['id'], 'title': data[i]['title']['english'] or data[i]['title']['romaji'], 'character': data[i]['characters']['edges'][0]['node'] if 'characters' in data[i] and data[i]['characters'] and 'edges' in data[i]['characters'] and data[i]['characters']['edges'] else None} for i in range(4)]
+        solution = data[0]
+
+    return data, solution
+
+@app.route('/game', methods=['GET', 'POST'])
+def game(counter=0):
     if request.method == 'POST':
         
+        selected_mode = request.form['selectedId']
+        solution, data = generateQuestions(selected_mode)
 
-        return render_template('game.html', username=session.get('username', None))
+        # randomizza le opzioni
+        random.shuffle(data)
+
+        return render_template('game.html', username=session.get('username', None), mode=selected_mode, data=data, solution=solution, counter=counter)
         # return redirect('/leaderboard')
 if __name__ == '__main__':
     app.run(debug=True)
