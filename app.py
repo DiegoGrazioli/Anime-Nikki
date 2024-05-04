@@ -7,6 +7,8 @@ import sqlite3 as sq
 import bcrypt
 import random
 
+counter = 0
+
 app = Flask(__name__)
 
 app.config["SESSION_PERMANENT"] = False
@@ -872,88 +874,104 @@ def generateQuestions(mode):
     # 3: indovina l'anime dal personaggio
     # 4: indovina il personaggio dall'anime
     # tutti hanno 4 opzioni, solo una è corretta. Tutto è preso dall'api di AniList in modo randomico, prediligendo i più popolari
-    query = ''
+    query = ""
     if mode == 1 or mode == 2:
-        query = '''
-            query ($page: Int, $perPage: Int) {
-                Page(page: $page, perPage: $perPage) {
-                    media(sort: POPULARITY_DESC, type: ANIME) {
-                        id
-                        title {
-                            romaji
-                            english
-                        }
-                        coverImage {
-                            large
-                        }
-                    }
+        query = """
+        query ($page: Int, $perPage: Int) {
+        Page(page: $page, perPage: $perPage) {
+            media(sort: SCORE_DESC, type: ANIME) {
+                id
+                title {
+                    romaji
+                    english
+                    native
                 }
-            }
-        '''
-    elif mode == 3 or mode == 4:
-        query = '''
-            query ($page: Int, $perPage: Int) {
-                Page(page: $page, perPage: $perPage) {
-                    media(sort: POPULARITY_DESC, type: ANIME) {
-                        id
-                        title {
-                            romaji
-                            english
-                        }
-                        characters {
-                            edges {
-                                role
-                                node {
-                                    id
-                                    name {
-                                        full
-                                        native
-                                    }
-                                    image {
-                                        large
-                                        medium
-                                    }
+                coverImage {
+                    large
+                }
+                characters {
+                        edges {
+                            role
+                            node {
+                                id
+                                name {
+                                    full
+                                    native
+                                }
+                                image {
+                                    large
+                                    medium
                                 }
                             }
                         }
                     }
                 }
             }
-        '''
-    url = 'https://graphql.anilist.co'
+        }
+        """
+    else:
+        query = """
+        query ($page: Int, $perPage: Int) {
+        Page(page: $page, perPage: $perPage) {
+            media(sort: SCORE_DESC, type: ANIME) {
+                id
+                title {
+                    romaji
+                    english
+                    native
+                }
+                coverImage {
+                    large
+                }
+                characters {
+                        edges {
+                            role
+                            node {
+                                id
+                                name {
+                                    full
+                                    native
+                                }
+                                image {
+                                    large
+                                    medium
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        """
+    # Parametri della query
     variables = {
         "page": 1,
-        "perPage": 10
+        "perPage": 150
     }
 
+    url = 'https://graphql.anilist.co'
+    # Effettua la richiesta POST all'API di AniList
     response = requests.post(url, json={'query': query, 'variables': variables})
     data = response.json()
 
-    # seleziona quattro elementi randomici dalla lista. Se mode è 1 o 2, seleziona solo l'id, il titolo e l'immagine, altrimenti seleziona l'id, il titolo e un personaggio
-    if mode == 1 or mode == 2:
-        data = data['data']['Page']['media']
-        data = [data[i] for i in range(4)]
-        data = [{'id': data[i]['id'], 'title': data[i]['title']['english'] or data[i]['title']['romaji'], 'image': data[i]['coverImage']['large']} for i in range(4)]
-        solution = data[0]
+    random_anime = random.sample(data['data']['Page']['media'], 4)
+    solution = random_anime[0]
+    random.shuffle(random_anime)
+    return solution, random_anime
+
+@app.route('/game/<int:mode>', methods=['GET', 'POST'])
+def game(mode, answer=None, solution=None):
+    selected_mode = mode
+    solution, data = generateQuestions(selected_mode)
+
+    return render_template('game.html', username=session.get('username', None), mode=selected_mode, data=data, solution=solution, counter=counter)
+    # return redirect('/leaderboard')
+
+def countercheck(trtf):
+    if trtf:
+        counter += 1
     else:
-        data = data['data']['Page']['media']
-        data = [data[i] for i in range(4)]
-        data = [{'id': data[i]['id'], 'title': data[i]['title']['english'] or data[i]['title']['romaji'], 'character': data[i]['characters']['edges'][0]['node'] if 'characters' in data[i] and data[i]['characters'] and 'edges' in data[i]['characters'] and data[i]['characters']['edges'] else None} for i in range(4)]
-        solution = data[0]
+        counter = 0
 
-    return data, solution
-
-@app.route('/game', methods=['GET', 'POST'])
-def game(counter=0):
-    if request.method == 'POST':
-        
-        selected_mode = request.form['selectedId']
-        solution, data = generateQuestions(selected_mode)
-
-        # randomizza le opzioni
-        random.shuffle(data)
-
-        return render_template('game.html', username=session.get('username', None), mode=selected_mode, data=data, solution=solution, counter=counter)
-        # return redirect('/leaderboard')
 if __name__ == '__main__':
     app.run(debug=True)
