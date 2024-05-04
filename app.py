@@ -964,7 +964,43 @@ def game(mode, answer=None, solution=None):
     selected_mode = mode
     solution, data = generateQuestions(selected_mode)
 
-    return render_template('game.html', username=session.get('username', None), mode=selected_mode, data=data, solution=solution, counter=counter)
+    # 1: indovina copertina dall'anime
+    # 2: indovina l'anime dalla copertina
+    # 3: indovina l'anime dal personaggio
+    # 4: indovina il personaggio dall'anime
+    # tutti hanno 4 opzioni, solo una è corretta. Tutto è preso dall'api di AniList in modo randomico, prediligendo i più popolari
+    if mode == 1:
+        # soluzione contiene il titolo dell'anime e l'id
+        solution = solution['title']['romaji'], solution['id']
+        options = {
+            'option': [(anime['coverImage']['large']) for anime in data],
+            'id': [(anime['id']) for anime in data]
+        }
+    elif mode == 2:
+        # soluzione contiene copertina dell'anime e l'id
+        solution = solution['coverImage']['large'], solution['id']
+        # data = [(anime['coverImage']['large'], anime['title']['romaji'], anime['id']) for anime in data]
+        options = {
+            'option': [(anime['title']['romaji']) for anime in data],
+            'id': [(anime['id']) for anime in data]
+        }
+    elif mode == 3:
+        # soluzione contiene un personaggio casuale e l'id
+        solution = solution['characters']['edges'][0]['node']['name']['full'], solution['characters']['edges'][0]['node']['id']
+        options = {
+            'option': [(anime['title']['romaji']) for anime in data],
+            'id': [(anime['id']) for anime in data]
+        }
+    elif mode == 4:
+        # soluzione contiene il titolo dell'anime e l'id
+        solution = solution['title']['romaji'], solution['id']
+        # options contiene un personaggio causale e l'id
+        options = {
+            'option': [(anime['characters']['edges'][0]['node']['name']['full']) for anime in data],
+            'id': [(anime['characters']['edges'][0]['node']['id']) for anime in data]
+        }
+
+    return render_template('game.html', username=session.get('username', None), mode=selected_mode, data=options, solution=solution, counter=counter)
     # return redirect('/leaderboard')
 
 def countercheck(trtf):
