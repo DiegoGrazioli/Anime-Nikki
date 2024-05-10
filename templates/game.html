@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A|N: Top anime</title>
+    <title>A|N: Play</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
@@ -13,6 +13,8 @@
             background-attachment: fixed;
             background-size: cover;
             color: #ffffff;
+            margin: 0;
+            padding: 0;
         }
 
         .headerDivider {
@@ -586,51 +588,43 @@
     </div>
             <div class="anime-fullcontainer">
                 <div class="content">
-                    {% if mode == 1 %}
-                        {% for index in range(4) %}
-                            {% set current_id = data['id'][index] %}
-                            {% set current_option = data['option'][index] %}
-                            {% if current_id == solution[1] %}
+                    {% for index in range(4) %}
+                        {% set current_id = data['id'][index] %}
+                        {% set current_option = data['option'][index] %}
+                        {% if current_id == solution[1] %}
+                            {% if mode == 1 %}
                                 <div class="cardimg correct" data-id="{{ loop.index }}">
-                            {% else %}
-                                <div class="cardimg wrong" data-id="{{ loop.index }}">
-                            {% endif %}
                                     <h2 class="text-2xl text-center">
                                         <a href="{{ url_for('game', mode=mode, answer=current_id, solution=solution['id'], counter=counter) }}">
                                             <img src="{{ current_option }}" alt="Anime Image">
                                         </a>
                                     </h2>
                                 </div>
-                        {% endfor %}
-                    {% elif mode == 2 %}
-                        {% for index in range(4) %}
-                            {% set current_id = data['id'][index] %}
-                            {% set current_option = data['option'][index] %}
-                            {% if current_id == solution[1] %}
-                                <div class="card correct" data-id="{{ loop.index }}">
                             {% else %}
-                                <div class="card wrong" data-id="{{ loop.index }}">
-                            {% endif %}
+                                <div class="card correct" data-id="{{ loop.index }}">
                                     <h2 class="text-2xl text-center">
                                         <a href="{{ url_for('game', mode=mode, answer=current_id, solution=solution['id'], counter=counter) }}">{{ current_option }}</a>
                                     </h2>
                                 </div>
-                        {% endfor %}
-                    {% else %}
-                        {% for index in range(4) %}
-                            {% set current_id = data['id'][index] %}
-                            {% set current_option = data['option'][index] %}
-                            {% if current_id == solution[1] %}
-                                <div class="card correct" data-id="{{ loop.index }}">
+                            {% endif %}
+                        {% else %}
+                            {% if mode == 1 %}
+                                <div class="cardimg wrong" data-id="{{ loop.index }}">
+                                    <h2 class="text-2xl text-center">
+                                        <a href="{{ url_for('game', mode=mode, answer=current_id, solution=solution['id'], counter=counter) }}">
+                                            <img src="{{ current_option }}" alt="Anime Image">
+                                        </a>
+                                    </h2>
+                                </div>
                             {% else %}
                                 <div class="card wrong" data-id="{{ loop.index }}">
+                                    <h2 class="text-2xl text-center">
+                                        <a href="{{ url_for('game', mode=mode, answer=current_id, solution=solution['id'], counter=counter) }}">{{ current_option }}</a>
+                                    </h2>
+                                </div>
                             {% endif %}
-                                <h2 class="text-2xl text-center">
-                                    <a href="{{ url_for('game', mode=mode, answer=current_id, solution=solution['id'], counter=counter) }}">{{ current_option }}</a>
-                                </h2>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+                        {% endif %}
+                    {% endfor %}
                 </div>
             </div>
         </div>

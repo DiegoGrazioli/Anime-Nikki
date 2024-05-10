@@ -986,7 +986,7 @@ def game(mode, answer=None, solution=None):
         }
     elif mode == 3:
         # soluzione contiene un personaggio casuale e l'id
-        solution = solution['characters']['edges'][0]['node']['name']['full'], solution['characters']['edges'][0]['node']['id']
+        solution = solution['characters']['edges'][0]['node']['name']['full'], solution['id']
         options = {
             'option': [(anime['title']['romaji']) for anime in data],
             'id': [(anime['id']) for anime in data]
@@ -997,7 +997,7 @@ def game(mode, answer=None, solution=None):
         # options contiene un personaggio causale e l'id
         options = {
             'option': [(anime['characters']['edges'][0]['node']['name']['full']) for anime in data],
-            'id': [(anime['characters']['edges'][0]['node']['id']) for anime in data]
+            'id': [(anime['id']) for anime in data]
         }
 
     return render_template('game.html', username=session.get('username', None), mode=selected_mode, data=options, solution=solution, counter=counter)
