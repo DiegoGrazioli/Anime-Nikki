@@ -692,7 +692,16 @@ def account():
         anime = cur.fetchall()
         cur.execute('SELECT manga_id FROM user_manga WHERE user_id = ?', (session['username'],))
         manga = cur.fetchall()
+        cur.execute('SELECT username FROM users ORDER BY streak DESC')
+        users = cur.fetchall()
         conn.close()
+
+        # controlla se username di sessione è presente nella lista degli utenti
+        if (session['username'],) in users:
+            # se presente, controlla in che posizione è. Se primo, top=1, se secondo, top=2, ecc.
+            top = users.index((session['username'],)) + 1
+        else:
+            top = None
 
         # controlla se la tupla anime ha elementi vuoti
         if anime:
@@ -764,7 +773,7 @@ def account():
 
         # Formatta la data nel formato desiderato
         data = data.strftime("%d-%m-%Y")
-        return render_template('account.html', username=session.get('username', None), createdate=data, anime=anime_data, manga=manga_data, streak=streak)
+        return render_template('account.html', username=session.get('username', None), createdate=data, anime=anime_data, manga=manga_data, streak=streak, top=top)
     else:
         return redirect('/login')
 

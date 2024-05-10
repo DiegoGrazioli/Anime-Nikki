@@ -435,3 +435,10 @@ nav {
         transform: translateY(-100%);
     }
 }
+
+.record {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}

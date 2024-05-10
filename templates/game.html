@@ -564,6 +564,38 @@
             width: 100%;
             height: 100px;
         }
+        .top-right {
+            position: absolute;
+            display: flex;
+            justify-content: right;
+            align-items: right;
+            margin: 16px;
+        }
+        .streak {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-right: 16px;
+        }
+        .record {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        #streak-img {
+            filter: brightness(0);
+        }
+
+        #particle {
+            position: absolute;
+            width: 5px; /* Imposta la dimensione desiderata */
+            height: 5px; /* Imposta la dimensione desiderata */
+            background-color: #ffffff; /* Colore delle particelle */
+            border-radius: 50%;
+            pointer-events: none; /* Per evitare che le particelle interferiscano con gli eventi del mouse */
+        }
     </style>
 </head>
 <body>
@@ -572,7 +604,9 @@
         <div class="home-spacing"></div>
         <div class="top-right">
             <div class="streak">
-                <img src="src\output-onlinegiftools.gif" alt="streak"><h2>{{counter}}</h2>
+                <img src="../static/src/output-onlinegiftools.gif" alt="streak" id="streak-img">
+                <div id="particles"></div>
+                <h2 id="streak">{{counter}}</h2>
             </div>
             <div class="record">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
@@ -690,6 +724,18 @@
                 }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const streak = parseInt(document.getElementById('streak').innerHTML);
+            const maxBrightness = 1000;
+            const brightness = Math.min(streak * 10, maxBrightness);
+
+            const imgStreak = document.getElementById('streak-img');
+            if (imgStreak) {
+                imgStreak.style.filter = `brightness(${brightness}%)`;
+            }
+        });
+
     </script>
 </body>
 </html>
