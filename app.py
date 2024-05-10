@@ -686,6 +686,8 @@ def account():
         cur = conn.cursor()
         cur.execute('SELECT createdate FROM users WHERE username = ?', (session['username'],))
         data_string = cur.fetchone()[0]
+        cur.execute('SELECT streak FROM users WHERE username = ?', (session['username'],))
+        streak = cur.fetchone()[0]
         cur.execute('SELECT anime_id FROM user_anime WHERE user_id = ?', (session['username'],))
         anime = cur.fetchall()
         cur.execute('SELECT manga_id FROM user_manga WHERE user_id = ?', (session['username'],))
@@ -762,7 +764,7 @@ def account():
 
         # Formatta la data nel formato desiderato
         data = data.strftime("%d-%m-%Y")
-        return render_template('account.html', username=session.get('username', None), createdate=data, anime=anime_data, manga=manga_data)
+        return render_template('account.html', username=session.get('username', None), createdate=data, anime=anime_data, manga=manga_data, streak=streak)
     else:
         return redirect('/login')
 
@@ -959,18 +961,21 @@ def generateQuestions(mode):
     random.shuffle(random_anime)
     return solution, random_anime
 
-@app.route('/game/<int:mode>', methods=['GET', 'POST'])
-def game(mode, answer=None, solution=None):
-    # Aggiornamento del contatore
-    if session.get('correct_answers', None) is None:
-        session['correct_answers'] = 0
+@app.route('/game/<int:mode>')
+def game(mode):
+    answer = request.args.get('answer')
+    solution = request.args.get('solution')
+    counter = request.args.get('counter', 0, type=int)
+
+    if answer is None or solution is None:
+        counter = 0
 
     # Se si è risposto correttamente, aumenta il contatore
     if is_correct_answer(answer, solution):
-        session['correct_answers'] += 1
+        counter += 1
     else:
         # Se si è risposto erroneamente, resetta il contatore
-        session['correct_answers'] = 0
+        counter = 0
 
     selected_mode = mode
     solution, data = generateQuestions(selected_mode)
@@ -1011,11 +1016,26 @@ def game(mode, answer=None, solution=None):
             'id': [(anime['id']) for anime in data]
         }
 
-    return render_template('game.html', username=session.get('username', None), mode=selected_mode, data=options, solution=solution, counter=session['correct_answers'])
+    # connetti il database e prendi dalla colonna record il record dell'utente
+    conn = sq.connect('anime.sqlite3')
+    cur = conn.cursor()
+    cur.execute('SELECT streak FROM users WHERE username = ?', (session.get('username'),))
+    record = cur.fetchone()[0]
+    conn.close()
+    if counter > record:
+        # connetti il database e aggiorna il record dell'utente
+        conn = sq.connect('anime.sqlite3')
+        cur = conn.cursor()
+        cur.execute('UPDATE users SET streak = ? WHERE username = ?', (counter, session.get('username')))
+        conn.commit()
+        conn.close()
+        record = counter
+
+    return render_template('game.html', username=session.get('username', None), mode=selected_mode, data=options, solution=solution, counter=counter, record=record)
 
 def is_correct_answer(answer, solution):
     # Confronta la risposta data con la soluzione
-    print (answer, solution)
+    print(answer, solution)
     return answer == solution
 
 if __name__ == '__main__':
