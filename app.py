@@ -961,6 +961,17 @@ def generateQuestions(mode):
 
 @app.route('/game/<int:mode>', methods=['GET', 'POST'])
 def game(mode, answer=None, solution=None):
+    # Aggiornamento del contatore
+    if session.get('correct_answers', None) is None:
+        session['correct_answers'] = 0
+
+    # Se si è risposto correttamente, aumenta il contatore
+    if is_correct_answer(answer, solution):
+        session['correct_answers'] += 1
+    else:
+        # Se si è risposto erroneamente, resetta il contatore
+        session['correct_answers'] = 0
+
     selected_mode = mode
     solution, data = generateQuestions(selected_mode)
 
@@ -1000,14 +1011,12 @@ def game(mode, answer=None, solution=None):
             'id': [(anime['id']) for anime in data]
         }
 
-    return render_template('game.html', username=session.get('username', None), mode=selected_mode, data=options, solution=solution, counter=counter)
-    # return redirect('/leaderboard')
+    return render_template('game.html', username=session.get('username', None), mode=selected_mode, data=options, solution=solution, counter=session['correct_answers'])
 
-def countercheck(trtf):
-    if trtf:
-        counter += 1
-    else:
-        counter = 0
+def is_correct_answer(answer, solution):
+    # Confronta la risposta data con la soluzione
+    print (answer, solution)
+    return answer == solution
 
 if __name__ == '__main__':
     app.run(debug=True)
