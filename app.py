@@ -1,15 +1,20 @@
 from datetime import datetime
 import xmltodict
 import requests
-from flask import Flask, jsonify, redirect, request, render_template, url_for, session
+from flask import Flask, json, jsonify, redirect, request, render_template, url_for, session
 from flask_session import Session
 import sqlite3 as sq
 import bcrypt
 import random
+from flask_assets import Environment, Bundle
 
 counter = 0
 
 app = Flask(__name__)
+assets = Environment(app)
+
+js = Bundle('js/chart.min.js', output='gen/packed.js')
+assets.register('js_all', js)
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -1046,6 +1051,32 @@ def is_correct_answer(answer, solution):
     # Confronta la risposta data con la soluzione
     print(answer, solution)
     return answer == solution
+
+@app.route('/stats')
+def stats():
+    conn = sq.connect('anime.sqlite3')
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM users ORDER BY streak DESC')
+    data = cur.fetchall()
+    data = [{'username': row[1], 'streak': row[4]} for row in data]
+    conn.close()
+
+    return render_template('stats.html', username=session.get('username', None), top=data)
+
+@app.route('/get_stats')
+def get_stats():
+    conn = sq.connect('anime.sqlite3')
+    cur = conn.cursor()
+    # SELECT che torna il numero di utenti per ogni giorno in ordine crescente, ignorando le ore
+    cur.execute('SELECT DATE(createdate) as createdate, COUNT(*) FROM users GROUP BY DATE(createdate)')
+    data2 = cur.fetchall()
+    data2 = [{'createdate': row[0], 'count': row[1]} for row in data2]
+    conn.close()
+    # per ogni elemento count in data2, somma count a quello precedente. Se è il primo elemento non aggiungere nulla
+    for i in range(1, len(data2)):
+        data2[i]['count'] += data2[i-1]['count']
+
+    return jsonify(data2)
 
 if __name__ == '__main__':
     app.run(debug=True)

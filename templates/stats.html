@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A|N: New Game</title>
+    <title>A|N: Stats</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
@@ -234,7 +234,7 @@
             padding-right: 20px;
         }
 
-        .card h3, .card2 h3 {
+        .card h3, .card2 h3, .firstcard h3 {
             font-size: 1.5rem;
             margin-bottom: 8px;
         }
@@ -469,20 +469,70 @@
         }
 
         .card {
-            position: relative;
-            width: calc(50% - 32px);
             border: 1px solid #ccc;
+            background: linear-gradient(45deg, transparent, #181D3C, transparent);
             border-radius: 32px;
-            overflow: hidden;
+            border-left: 0px;
+            border-right: 0px;
+            padding: 16px;
             margin: 16px;
             margin-bottom: 16px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: box-shadow 0.3s ease;
-            cursor: pointer;
-            padding: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .card h2 {
+        .firstcard {
+            border: 1px solid #ccc;
+            background: linear-gradient(45deg, #ffe100, #181D3C, transparent);
+            border-radius: 32px;
+            border-left: 0px;
+            border-right: 0px;
+            padding: 16px;
+            margin: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .secondcard {
+            border: 1px solid #ccc;
+            background: linear-gradient(45deg, #b4b4b4, #181D3C, transparent);
+            border-radius: 32px;
+            border-left: 0px;
+            border-right: 0px;
+            padding: 16px;
+            margin: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .thirdcard {
+            border: 1px solid #ccc;
+            background: linear-gradient(45deg, #835e3a, #181D3C, transparent);
+            border-radius: 32px;
+            border-left: 0px;
+            border-right: 0px;
+            padding: 16px;
+            margin: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card h2, .firstcard h2, .secondcard h2, .thirdcard h2 {
             animation: fadeIn-translate2 1s;
             margin-left: 16px;
             margin-right: 16px;
@@ -523,25 +573,58 @@
             color: inherit;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 </head>
 <body>
     {% include 'header.html' %}
-    <main>
+    <main class="">
         <div class="home-spacing"></div>
-        <div class="body-container">
-            <div class="anime-fullcontainer">
-            
-                <div class="content">
-                    <div class="card" data-id="1"><h2 class="text-2xl text-center"><a href="{{ url_for('game', mode=1, answer=null, solution=null, counter=0) }}">Indovina la copertina dell'anime</a></h2></div>
-                    <div class="card" data-id="2"><h2 class="text-2xl text-center"><a href="{{ url_for('game', mode=2, answer=null, solution=null, counter=0) }}">Indovina dalla copertina dell'anime</a></h2></div>
-                    <div class="card" data-id="3"><h2 class="text-2xl text-center"><a href="{{ url_for('game', mode=3, answer=null, solution=null, counter=0) }}">Indovina dal personaggio</a></h2></div>
-                    <div class="card" data-id="4"><h2 class="text-2xl text-center"><a href="{{ url_for('game', mode=4, answer=null, solution=null, counter=0) }}">Indovina il personaggio</a></h2></div>
-                </div>
-    
-            
-            </div>
+        <h1 class=" title text-2xl py-8">
+            <div class="separator"></div>
+                Top players
+            <div class="separator"></div>
+        </h1>
+        <div class="anime-fullcontainer">
+            {% for player in top %}
+                {% if loop.index0 == 0 %}
+                    <div class="firstcard">
+                        <h2 class="text-2xl">{{ loop.index0 +1}}</h2>
+                        <h2 class="text-xl">{{ player.username }}</h2>
+                        <p>{{ player.streak }}</p>
+                    </div>
+                {% elif loop.index0 == 1 %}
+                    <div class="secondcard">
+                        <h2 class="text-2xl">{{ loop.index0 +1}}</h2>
+                        <h2 class="text-xl">{{ player.username }}</h2>
+                        <p>{{ player.streak }}</p>
+                    </div>
+                {% elif loop.index0 == 2 %}
+                    <div class="thirdcard">
+                        <h2 class="text-2xl">{{ loop.index0 +1}}</h2>
+                        <h2 class="text-xl">{{ player.username }}</h2>
+                        <p>{{ player.streak }}</p>
+                    </div>
+                {% else %}
+                    <div class="card">
+                        <h2>{{ loop.index0 +1}}</h2>
+                        <h2 class="text-xl">{{ player.username }}</h2>
+                        <p>{{ player.streak }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="home-spacing"></div>
+        <h1 class=" title text-2xl py-8">
+            <div class="separator"></div>
+                Statistics
+            <div class="separator"></div>
+        </h1>
+
+        <div class="flex justify-center">
+            <canvas id="myCanvas" class="w-4/5" width="800" height="400"></canvas>
         </div>
     </main>
+
     <script>
         // Genera un numero casuale tra 0 e 3
         var randomIndex = Math.floor(Math.random() * 4);
@@ -567,6 +650,89 @@
                 // Aggiungi la classe "active" all'elemento genitore del pulsante cliccato
                 card.classList.add('active');
             });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/get_stats')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data || data.length === 0 || !data[0]['createdate'] || !data[0]['count']) {
+                        console.error('Error: Data is not valid');
+                        return;
+                    }
+
+                    var dates = data.map(entry => entry['createdate']);
+                    var values = data.map(entry => entry['count']);
+
+                    var canvas = document.getElementById("myCanvas");
+                    var ctx = canvas.getContext("2d");
+
+                    // Impostazioni del grafico
+                    var margin = { top: 50, right: 50, bottom: 50, left: 50 };
+                    var width = canvas.width - margin.left - margin.right;
+                    var height = canvas.height - margin.top - margin.bottom;
+
+                    // Calcolo del massimo e minimo valore sull'asse y
+                    var maxValue = Math.max.apply(null, values);
+                    var minValue = Math.min.apply(null, values);
+
+                    // Controllo se ci sono dati sufficienti per disegnare il grafico
+                    if (dates.length === 0 || values.length === 0) {
+                        console.error('Error: No data available');
+                        return;
+                    }
+
+                    // Calcolo delle dimensioni del grafico
+                    var xScale = width / (dates.length - 1);
+                    var yScale = height / (maxValue - minValue);
+
+                    // Disegna il grafico
+                    ctx.beginPath();
+                    ctx.moveTo(margin.left, canvas.height - margin.bottom - (values[0] - minValue) * yScale);
+                    for (var i = 1; i < dates.length; i++) {
+                        var x = margin.left + i * xScale;
+                        var y = canvas.height - margin.bottom - (values[i] - minValue) * yScale;
+                        ctx.lineTo(x, y);
+                    }
+                    ctx.strokeStyle = '#3e95cd';
+                    ctx.stroke();
+
+                    // Asse x
+                    ctx.beginPath();
+                    ctx.moveTo(margin.left, canvas.height - margin.bottom);
+                    ctx.lineTo(canvas.width - margin.right, canvas.height - margin.bottom);
+                    ctx.strokeStyle = '#fff';
+                    ctx.stroke();
+
+                    // Asse y
+                    ctx.beginPath();
+                    ctx.moveTo(margin.left, canvas.height - margin.bottom);
+                    ctx.lineTo(margin.left, margin.top);
+                    ctx.strokeStyle = '#fff';
+                    ctx.stroke();
+
+                    // Etichette asse x
+                    ctx.fillStyle = '#fff'; // Imposta il colore del testo a bianco
+                    ctx.textAlign = 'center'; // Allinea il testo al centro
+                    ctx.textBaseline = 'top'; // Allinea il testo verticalmente in alto
+                    var stepX = Math.ceil(dates.length / 10); // Calcola il passo
+                    for (var i = 0; i < dates.length; i += stepX) {
+                        var x = margin.left + i * xScale;
+                        ctx.fillText(dates[i], x, canvas.height - margin.bottom + 10);
+                    }
+
+                    // Etichette asse y
+                    ctx.textAlign = 'right'; // Allinea il testo a destra
+                    ctx.textBaseline = 'middle'; // Allinea il testo verticalmente al centro
+                    ctx.fillStyle = '#fff'; // Imposta il colore del testo a bianco
+                    var stepY = Math.ceil((maxValue - minValue) / 10); // Calcola il passo
+                    for (var i = minValue; i <= maxValue; i += stepY) {
+                        var y = canvas.height - margin.bottom - (i - minValue) * yScale;
+                        ctx.fillText(i, margin.left - 10, y);
+                    }
+
+                })
+                .catch(error => console.error('Error fetching data:', error));
         });
     </script>
 </body>
