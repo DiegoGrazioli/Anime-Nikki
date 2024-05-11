@@ -1,82 +1,83 @@
-# Esercizio di Sviluppo di Sito Web
+## Documentazione del Progetto: Sito Web Anime-Nikki
 
-Obiettivo:
-Realizzare un sito web a tua scelta, utilizzando le pratiche di sviluppo agile e seguendo un approccio guidato dall'analisi preliminare, dalla progettazione del database e dalla documentazione tecnica. Successivamente, il sito deve essere caricato su un repository GitHub con commit costanti, utilizzando gli issue per tracciare le varie feature implementate. Infine, verrà richiesto il deploy del sito su PythonAnywhere.
+### Introduzione
 
-## Passaggi
+Il progetto Anime-Nikki è un sito web progettato per gli amanti degli anime e manga che desiderano tenere traccia dei propri show preferiti e scoprire nuove serie. Lo scopo del sito è fornire agli utenti un'interfaccia intuitiva per creare un diario degli anime, aggiungere recensioni e partecipare a discussioni sulla cultura anime.
 
-1. **Analisi Preliminare:**
-   - Utilizzando le user story, identifica i requisiti principali del sito. Definisci le funzionalità chiave che il sito deve offrire agli utenti.
-   - Scrivi le user story in modo chiaro e dettagliato, indicando i ruoli degli utenti, le azioni che possono compiere e gli obiettivi che si prefiggono.
+### Tecnologie Utilizzate
 
-2. **Definizione del Database:**
-   - Progetta lo schema del database in base ai requisiti identificati nelle user story.
-   - Definisci le tabelle necessarie, le relazioni tra di esse e i vincoli di integrità referenziale.
-   - Documenta il modello del database indicando i tipi di dato, le chiavi primarie e esterne, e una breve descrizione di ciascuna tabella.
+- **Linguaggi di programmazione**: HTML, CSS, JavaScript, Python
+- **Framework**: Flask (Python), Bootstrap (CSS)
+- **Database**: SQLite
+- **Strumenti**: Git, GitHub, PythonAnywhere
 
-3. **Relazione Tecnica:**
-   - Redigi una relazione tecnica che illustri l'architettura generale del sito web. Puoi utilizzare il template [presente  nel repository](https://github.com/ProfAndreaPollini/quinta-info-sito-web/blob/ad6aff218156d1cc32c36fc7057582ee3c3ccb7d/template_relazione_tecnica.md)
-   - Descrivi le tecnologie utilizzate (linguaggi di programmazione, framework, librerie, ecc.) e le motivazioni dietro le scelte fatte.
-   - Spiega l'organizzazione del codice, la struttura delle directory e i principali moduli o componenti del sito.
+### Architettura del Sistema
 
-4. **Sviluppo e Versionamento:**
-   - Crea un repository su GitHub per il tuo progetto.
-   - Inizia lo sviluppo del sito seguendo le user story e utilizzando gli issue di GitHub per tracciare le varie attività.
-   - Effettua commit costanti ogni volta che completi una nuova feature o risolvi un problema, includendo una breve descrizione delle modifiche apportate.
+Il sito Anime-Nikki segue un'architettura basata sul modello MVC (Model-View-Controller), che suddivide l'applicazione in tre componenti principali:
 
-5. **Deploy su PythonAnywhere:**
-   - Dopo aver completato lo sviluppo e aver verificato il corretto funzionamento del sito in locale, preparati per il deploy.
-   - Accedi a PythonAnywhere e crea un nuovo account se non ne possiedi già uno.
-   - Segui le istruzioni fornite da PythonAnywhere per caricare il tuo progetto sul server.
-   - Assicurati che tutte le dipendenze siano installate correttamente e che il sito sia configurato per utilizzare un ambiente di produzione.
-   - Effettua il deploy del sito su PythonAnywhere, assicurandoti che sia accessibile tramite un URL pubblico.
+- **Model**: Rappresenta la struttura dei dati del sito, gestendo il recupero e la manipolazione delle informazioni nel database.
+  
+- **View**: Gestisce la presentazione dell'interfaccia utente, utilizzando HTML, CSS e JavaScript per renderizzare le pagine web e interagire con l'utente.
+  
+- **Controller**: Coordina le interazioni tra il modello e la vista, gestendo le richieste dell'utente e aggiornando lo stato dell'applicazione di conseguenza. In questo progetto, il controller è implementato con Flask, che gestisce il routing delle richieste HTTP.
 
-### NOTA
+La struttura delle directory del progetto è organizzata come segue:
 
-Durante tutto il processo, assicurati di seguire le pratiche di sviluppo agile, mantenendo un approccio iterativo e adattativo. Fornisci documentazione dettagliata e commenti nel codice per facilitare la comprensione e la manutenzione del sito.
+```
+anime-nikki/
+│
+├── static/    (contiene file statici come CSS e JavaScript)
+│   ├── css/
+│   └── js/
+│
+├── templates/    (contiene i file HTML delle pagine del sito)
+│   ├── home.html
+│   └── ...
+│
+├── app.py    (file principale dell'applicazione Flask)
+├── database.py    (definizione del database e operazioni CRUD)
+└── ...
+```
 
-### NOTA: RELAZIONE TECNICA
+### Database
 
-Le normative non forniscono direttamente linee guida specifiche per la struttura di una relazione tecnica, ma promuovono principi generali di qualità e gestione documentale che possono essere applicati in vari contesti, inclusi quelli dell'ingegneria del software e dello sviluppo web.
+L'idea iniziale era la seguente:
 
-Tuttavia, possiamo fornire una struttura generale per una relazione tecnica che rispetti i principi di chiarezza, completezza e coerenza, e che può essere adattata all'esercizio proposto:
+![initial-scheme](db.png)
 
-- Introduzione:
+Lo schema del database per Anime-Nikki comprende le seguenti tabelle:
 
-  - Descrizione generale del progetto, inclusi gli obiettivi, lo scopo e il contesto.
-  - Breve riassunto dei requisiti e delle funzionalità chiave del sito web.
-  - 
-- Tecnologie Utilizzate:
+- **Utenti**: Contiene informazioni sugli utenti registrati, come nome utente, password, data di creazione e miglior punteggio della sezione di gioco.
+  
+- **Anime**: Memorizza i dettagli degli anime, prendendo solamente l'ID, sfruttando l'API di AniList/AniChart.
 
-  - Elenco e descrizione delle tecnologie, linguaggi di programmazione, framework, librerie e strumenti utilizzati nello sviluppo del sito.
+- **Manga**: Memorizza i dettagli dei manga, prendendo solamente l'ID, sfruttando l'API di AniList/AniChart.
 
-- Architettura del Sistema:
+- **Quotes**: Memorizza i dettagli della quote giornaliera, prendendo ID, titolo dell'anime, nome del personaggio e frase, sfruttando l'API di Animechan.
+  
+- **Preferiti**: Consente agli utenti di salvare in una sezione apposita i propri anime preferiti.
 
-  - Descrizione dell'architettura generale del sito web, inclusi componenti principali, moduli, pattern architetturali utilizzati (ad esempio MVC), e struttura delle directory.
-- Database:
+Le relazioni tra le tabelle sono gestite tramite chiavi primarie e esterne per garantire l'integrità referenziale.
 
-  - Descrizione dello schema del database, inclusi tabelle, relazioni, vincoli di integrità referenziale e tipi di dati utilizzati.
-  - Spiegazione delle scelte progettuali relative alla struttura del database.
+### Sviluppo del Software
 
-- Sviluppo del Software:
+Il processo di sviluppo del software per Anime-Nikki ha seguito un approccio agile, con iterazioni frequenti e adattative. Sono state utilizzate le user stories per identificare i requisiti e guidare lo sviluppo delle funzionalità chiave del sito. Gli issue di GitHub sono stati impiegati per tracciare le attività e garantire un progresso costante.
 
-  - Descrizione del processo di sviluppo seguito, inclusi metodi, tecniche e strumenti utilizzati per la gestione del codice sorgente, il versionamento e il controllo delle modifiche.
+### User Stories e Requisiti
 
-- User Stories e Requisiti:
+Di seguito sono elencate alcune delle user stories principali identificate durante l'analisi preliminare:
 
-  - Elenco delle user stories identificate durante l'analisi preliminare, con una descrizione dettagliata di ciascuna e dei relativi criteri di accettazione.
+1. **Come utente, voglio poter aggiungere anime al mio diario personale.**
+   - Criteri di accettazione: L'utente può aggiungere un anime/manga alla propria lista personale e visualizzarlo in un elenco separato. Stessa cosa per le quotes.
 
-- Documentazione del Codice:
+### Documentazione del Codice
 
-  - Indicazioni su come accedere e utilizzare la documentazione del codice sorgente, inclusi commenti nel codice e documentazione generata automaticamente (se presente).
+Il codice sorgente è documentato con commenti chiari e descrittivi per facilitare la comprensione e la manutenzione. In particolare, sono stati aggiunti commenti per spiegare la logica di funzionamento delle funzioni e dei metodi, nonché per descrivere la struttura dei file e delle classi.
 
-- Deploy e Manutenzione:
+### Deploy e Manutenzione
 
-  - Descrizione del processo di deploy del sito web, inclusi eventuali passaggi necessari per configurare l'ambiente di produzione.
-  - Indicazioni su come gestire la manutenzione del sito, inclusi aggiornamenti futuri e risoluzione di eventuali problemi.
-  - 
-- Conclusioni:
+Dopo il completamento dello sviluppo, il sito è stato deployato su PythonAnywhere seguendo le istruzioni fornite dalla piattaforma. Tutte le dipendenze sono state installate correttamente e il sito è stato configurato per l'ambiente di produzione. Attualmente, il sito è accessibile tramite l'URL pubblico [www.anime-nikki.com](www.anime-nikki.com).
 
-  - Breve riassunto delle principali conclusioni e considerazioni emerse durante lo sviluppo del sito web.
+### Conclusioni
 
-
+Il progetto Anime-Nikki ha fornito un'esperienza di apprendimento significativa nell'ambito dello sviluppo web e delle pratiche di sviluppo agile. Attraverso l'analisi preliminare, la progettazione del database e l'implementazione del sito, sono state acquisite competenze cruciali per la creazione di applicazioni web robuste e user-friendly dedicate agli appassionati di anime.
