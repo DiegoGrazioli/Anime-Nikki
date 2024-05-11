@@ -432,7 +432,7 @@ def get_item_by_name(name, is_anime=True):
                     }
                 }
             }
-        ''';
+        '''
     else:
         query = '''
             query ($title: String) {
